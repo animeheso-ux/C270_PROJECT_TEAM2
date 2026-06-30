@@ -1,0 +1,14 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+
+body {
+    min-height: 100vh;
+}
+
+
+h1 {
+    font-family: 'Times New Roman', Times, serif;
+}
