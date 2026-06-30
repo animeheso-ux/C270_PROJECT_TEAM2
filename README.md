@@ -1,6 +1,3 @@
-PLEASE READ 
-
-
 # Learning Quest
 
 ## Prerequisites
@@ -20,17 +17,17 @@ npm -v
 
 This project has separate frontend and backend folders. You need to install the dependencies for both.
 
-### Frontend
+### Frontend (`myapp`)
 
 ```bash
-cd frontend
+cd myapp
 npm install
 ```
 
-### Backend
+### Backend (`backend-node`)
 
 ```bash
-cd backend-node
+
 npm install
 ```
 
@@ -39,14 +36,13 @@ npm install
 ### Start the Backend
 
 ```bash
-cd backend-node
-npm start
+npx nodemon server.js
 ```
 
 ### Start the Frontend
 
 ```bash
-cd frontend
+cd myapp
 npm run dev
 ```
 
@@ -56,9 +52,9 @@ The frontend will typically be available at:
 http://localhost:5173
 ```
 
-The backend will run on the port configured in the backend project (commonly `http://localhost:3000` or `http://localhost:8000`).
+The backend will run on the port configured in the backend project.
 
 ## Notes
 
-- Run `npm install` **once** in both the `frontend` and `backend-node` folders before starting the project.
+- Run `npm install` **once** in both the `myapp` and `backend-node` folders before starting the project.
 - If you pull new changes that modify `package.json`, run `npm install` again in the affected folder.
