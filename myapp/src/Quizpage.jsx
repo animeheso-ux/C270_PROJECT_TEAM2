@@ -7,7 +7,7 @@ import "./QuizPage.css"
 
 function QuizPage({ToLogin}) {
 
-    async function VerifyToken() {
+    async function GetToken() {
         const Token = localStorage.getItem("Token")
 
         if (!Token) {
@@ -31,14 +31,14 @@ function QuizPage({ToLogin}) {
             ToLogin()
         }
 
-        
+        return data.Token
     }
 
 
 
     useEffect(()=> {
         if (location.port != 3000) {return}
-        VerifyToken()
+        GetToken()
     },[])
 
 
