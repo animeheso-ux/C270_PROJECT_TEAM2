@@ -71,19 +71,37 @@ function LoginPage({ToQuizPage,ToSignup}) {
 
 
 
-    return (
-        <div>
+        return (
+            <div className="Login-container">
+                <div className="Login-card  ">
+                    <h1>Learning Quest</h1>
+                    <p>Login to your account</p>
 
-            <div className="Login-Container">
-                <h1>Learning Quest</h1>
+                    <form>
+                        <div className="field">
+                            <label htmlFor="Username">Username</label>
+                            <input id="Username" type="text" placeholder="ilovedevops@gmail.com"/>
+                            <div className="error-message">Enter a valid username.</div>
+                        </div>
+                        <div className="field">
+                            <label htmlFor="Password">Password</label>
+                            <input id="Password" type="password" placeholder="●●●●●●●●"/>
+                            <div className="error-message">Password must be at least 8 characters.</div>
+                        </div>
 
+                        <div className="row-between">
+                            <label className="remember">
+                                <input type="checkbox"/> Remember me
+                            </label>
+                        </div>
 
-                <input id="Username" type="text" placeholder="username:"></input>
-                <input id="Password" type="text" placeholder="password:"></input>
+                        <button type="button" className="login-btn" onClick={Login}>Sign in
 
-                <button onClick={Login}>Login</button>
+                        </button>
+                    </form>
 
-                <a onClick={ToSignup}>Create account</a>
+                    <p className="signup-line">Don't have an account? 
+                        <a onClick={ToSignup} className="signup-link">Create account</a></p>
             </div>
         </div>
     )
