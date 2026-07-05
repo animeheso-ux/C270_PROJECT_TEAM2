@@ -1,19 +1,41 @@
 :root {
-    -accent:#6d5df6;
+    --accent:#6d5df6;
     --bg-dark:#090909;
     --bg-card:#ffffff;
     --font-sans: 'Inter', sans-serif;
 }
 
+*{margin:0; padding:0; box-sizing:border-box;}
+
+html,
+body,
+#root{
+    margin:0;
+    min-height:100vh;
+    width:100%;
+}
+
 body{
+    background: #111;
     font-family: var(--font-sans);
-    background: linear-gradient(
-        140deg,
-        #050505,
-        #0d0d0d,
-        #171717
-    );
+}
+
+.container-fluid{
     min-height: 100vh;
+    display: flex; 
+    justify-content: center;
+    align-items: center;      
+    padding: 2rem;
+}
+
+
+.row{
+    width: 100%;
+    max-width:  1200px;
+    background:#fff;
+    border-radius: 20px;
+    overflow:hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.4);
 }
 
 
@@ -24,38 +46,65 @@ body{
     padding: 4rem;
 }
 
+
+.left-panel h2{
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
 .left-panel h1{
-    font-size: 2.5rem;
+    font-size: 2.7rem;
     font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
 }
 
 .left-panel p{
-    max-width: 400px;
+    max-width: 420px;
     color: #bebebe;
+    line-height: 1.7;
 }
 
 .feature-icon{
-    width: 46px;
-    height: 46px;
+    width: 48px;
+    height: 48px;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 14px;
     background: rgba(255, 255, 255,.08);
+    color: #fff;
 }
 
 .login-card{
-    padding: 3rem;
+    padding: 3.5rem;
+    display: flex;
+    flex-direction: column;
     background: var(--bg-card);
-    border-radius: 1rem;
-    box-shadow: 0 35px 70px rgba(0,0,0,.45);
+   justify-content: center;
+}
+
+.login-card h1{
+    font-weight: 700;
+}
+
+.form-control{
+    height:48px;
+    border-radius: 10px;
+}
+
+.input-group .btn{
+    border-radius: 0px 10px 10px 0px;
 }
 
 .login-btn{
+    height:48px;
+    border: none;
+    border-radius: 10px;
     background:#111;
     color:#fff;
     font-weight: 700;
-    transition:0.3s ease;
+    transition:0.3s;
 }
 
 .login-btn:hover { 
@@ -81,6 +130,7 @@ body{
     background: #f5f5f5;
 }
 
+
 .signup-line{
     color: #666;
     margin-top: 1.5rem;
@@ -92,4 +142,14 @@ body{
     font-weight: 700;
     cursor: pointer;
     margin-left:6px
+}
+
+.signup-link:hover{
+    text-decoration: underline;
+}
+
+.error-message{
+    color: #dc3545;
+font-size: 0.85rem;
+    margin-top: 5px;
 }

@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect,useState } from "react"
 import "./LoginSign.css"
 import {BookOpen,Brain,Trophy,BarChart3} from "lucide-react"
 
@@ -38,7 +38,7 @@ function LoginPage({ToQuizPage,ToSignup}) {
             const PasswordText = document.getElementById("Password")?.value
 
     
-            if (UsernameText.length == 0 || PasswordText.length == 0) {
+            if (!UsernameText || !PasswordText) {
                 alert("username or password cannot be empty")
                 return
             }
@@ -65,7 +65,7 @@ function LoginPage({ToQuizPage,ToSignup}) {
 
         useEffect(()=> {
 
-            if (location.port != 3000) {return}
+            if (location.port != '3000') {return}
 
             VerifyToken()
         },[])
@@ -75,13 +75,13 @@ function LoginPage({ToQuizPage,ToSignup}) {
         return (
             <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center">
                 <div className="row w-100 shadow-lg rounded overflow-hidden" style={{ maxWidth: "1200px" }}>
-                    
-                    <div className="col-md-6 left-panel d-none d-md-flex flex-column justify-content-center">
-                        <h2 className="fw-boldmb-4">Learning Quest</h2>
-                        <h1 className="fw-bold mb-4">Master Your Modules.One Quiz At A Time.</h1>
-                        <p>Test your knowledge and challenge yourself with our engaging quizzes. Sign in to access a world of learning and fun!</p>
-        
 
+                    {/* Left Panel */}
+                    <div className="col-md-6 left-panel d-none d-md-flex flex-column justify-content-center">
+                        <h2 className="fw-bold mb-4">Learning Quest</h2>
+                        <h1 className="fw-bold mb-4">Master Your Modules. One Quiz At A Time.</h1>
+                        <p>Test your knowledge and challenge yourself with our engaging quizzes. Sign in to access a world of learning and fun!</p>
+    
                         <div className="mt-4">
                             <div className="d-flex align-items-center mb-3">
                                 <div className="feature-icon me-3"><BookOpen size={22} /></div>
@@ -103,38 +103,40 @@ function LoginPage({ToQuizPage,ToSignup}) {
                                 <div><h5>Achieve Better Results</h5><small>Build confidence before every exam.</small></div>
                             </div>
                         </div>
-
-                        <div className="col-md-6 bg-white logincard">
-                            <h1 className="mb-2">Welcome back</h1>
-                            <p className="text-muted mb-4">Sign in to continue to Learning Quest.</p>
+                    </div>
+                    
+    
+                <div className="col-md-6 bg-white login-card">
+                        <h1 className="mb-2">Welcome back</h1>
+                        <p className="text-muted mb-4">Sign in to continue to Learning Quest.</p>
                         
-                        <form>
-                            <div className="mb-3">
-                                <label htmlFor="Username" className="form-label">Username</label>
-                                <input id="Username" type="text" className="form-control" placeholder="ilovedevops@gmail.com"/>
-                                <div className="error-message">Enter a valid username.</div>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="Password" className="form-label">Password</label>
-                                <div className="input-group">
-                                    <input id="Password" type={showPassword ? "text" : "password"} className="form-control" placeholder="●●●●●●●●"/>
-                                    <button type="button" className="btn btn-outline-secondary" onClick={() => setShowPassword(!showPassword)}>
-                                        {showPassword ? "Hide" : "Show"}
-                                    </button>
-                                </div>
-                                <div className="error-message">Password must be at least 8 characters.</div>
+                    <form>
+                        <div className="mb-3">
+                            <label htmlFor="Username" className="form-label">Username</label>
+                            <input id="Username" type="text" className="form-control" placeholder="ilovedevops@gmail.com"/>
+                            <div className="error-message">Enter a valid username.</div>
                         </div>
-
-                        <div className="d-flex justify-content-between align-items-center mb-3">
-                            <div className="form-check">
-                                <input className="form-check-input" type="checkbox" id="rememberMe"/>
-                                <label className="form-check-label" htmlFor="rememberMe">Remember me</label>
+                        <div className="mb-3">
+                            <label htmlFor="Password" className="form-label">Password</label>
+                            <div className="input-group">
+                                <input id="Password" type={showPassword ? "text" : "password"} className="form-control" placeholder="●●●●●●●●"/>
+                                <button type="button" className="btn btn-outline-secondary" onClick={() => setShowPassword(!showPassword)}>
+                                    {showPassword ? "Hide" : "Show"}
+                                </button>
                             </div>
-                            <button type="button" className="btn btn-link">Forgot password?</button>                       
-                        </div>
+                            <div className="error-message">Password must be at least 8 characters.</div>
+                    </div>
 
-                            <button type="button" className="btn login-btn w-100" onClick={Login}>Sign in</button>
-                        </form>
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" id="rememberMe"/>
+                            <label className="form-check-label" htmlFor="rememberMe">Remember me</label>
+                        </div>
+                        <button type="button" className="btn btn-link">Forgot password?</button>                       
+                    </div>
+
+                        <button type="button" className="btn login-btn w-100" onClick={Login}>Sign in</button>
+                    </form>
 
                         <div className="text-center my-3 text-muted">or</div>
                         <button type="button" className="google-btn w-100">
@@ -150,7 +152,6 @@ function LoginPage({ToQuizPage,ToSignup}) {
                     </div>
                 </div>
             </div>
-        </div>
         );
 }
 
