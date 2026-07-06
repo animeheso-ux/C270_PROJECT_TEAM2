@@ -34,33 +34,46 @@ function LoginPage({ToQuizPage,ToSignup}) {
 
 
         async function Login() {
-            const UsernameText = document.getElementById("Username")?.value
-            const PasswordText = document.getElementById("Password")?.value
+            let currentErrors = { username: "", password: "" };
+            let isValid = true;
 
-    
-            if (!UsernameText || !PasswordText) {
-                alert("username or password cannot be empty")
-                return
+            // 触发表单前端验证逻辑
+            if (!username.trim()) {
+                currentErrors.username = "Username or Email cannot be empty.";
+                isValid = false;
             }
-    
-            const response = await fetch("/Login",{
-                method : "POST",
-                headers : {"Content-Type" : "application/json"},
-                body : JSON.stringify({ username : UsernameText,password : PasswordText})
-            })
-    
-            const data = await response.json()
-    
-    
-            alert(data.message)
+
+            if (!password) {
+                currentErrors.password = "Password cannot be empty.";
+                isValid = false;
+            } else if (password.length < 8) {
+                currentErrors.password = "Password must be at least 8 characters.";
+                isValid = false;
+            }
+
+            setErrors(currentErrors);
+            if (!isValid) return;
+
+            try {
+            const response = await fetch("/Login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: username, password: password })
+            });
+
+            const data = await response.json();
+            alert(data.message);
     
             if (data.message == "success") {
                 localStorage.setItem("Token",data.token)
                 ToQuizPage()
             }
-    
-    
+        } catch (err) {
+            console.error("Login request failed:", err);
+            alert("An error occurred during login.");
         }
+    
+    }
 
 
         useEffect(()=> {
@@ -79,7 +92,7 @@ function LoginPage({ToQuizPage,ToSignup}) {
 
                     {/* Left Panel */}
                     <div className="col-md-6 left-panel d-none d-md-flex flex-column justify-content-center">
-                        <h2 className="fw-bold mb-4">Learning Quest</h2>
+                        <h2>Learning Quest</h2>
 
                         <h1>
                             Master Your Modules. 
@@ -92,7 +105,7 @@ function LoginPage({ToQuizPage,ToSignup}) {
                         </p>
                         
                         <div className="mt-4">
-                            <div className="d-flex align-items-center mb-3">
+                            <div className="feature-item">
                                 <div className="feature-icon me-3">
                                     <BookOpen size={22} />
                                 </div>
@@ -102,7 +115,7 @@ function LoginPage({ToQuizPage,ToSignup}) {
                                 </div>
                             </div>
 
-                            <div className="d-flex align-items-center mb-3">
+                            <div className="feature-item">
                                 <div className="feature-icon me-3">
                                     <BarChart3 size={22} />
                                 </div>
@@ -112,17 +125,17 @@ function LoginPage({ToQuizPage,ToSignup}) {
                                 </div>
                             </div>
 
-                            <div className="d-flex align-items-center mb-3">
+                            <div className="feature-item">
                                 <div className="feature-icon me-3">
                                     <Brain size={22} />
                                 </div>
                                 <div>
                                     <h5>Learn Smart</h5>
-                                    <small>Focus on weaktopics and master them quickly.</small>
+                                    <small>Focus on weak topics and master them quickly.</small>
                                 </div>
                             </div>
 
-                            <div className="d-flex align-items-center">
+                            <div className="feature-item">
                                 <div className="feature-icon me-3">
                                     <Trophy size={22} />
                                 </div>
@@ -136,15 +149,15 @@ function LoginPage({ToQuizPage,ToSignup}) {
                     
     
                     <div className="col-md-6 bg-white login-card">
-                        <h1>Welcome back</h1>
-                        <p className="text-muted mb-4">
+                        <h1>Welcome back!</h1>
+                        <p className="text-muted mb-4 ">
                             Sign in to continue to Learning Quest.
                         </p>
                         
                         <form>
 
                         <div className="mb-3">
-                            <label htmlFor="Username" className="form-label">Username</label>
+                            <label htmlFor="Username" className="form-label">Username / Email</label>
                             <input id="Username" type="text" className="form-control" placeholder="ilovedevops@gmail.com"/>
                             <div className="error-message">Enter a valid username.</div>
                         </div>
@@ -152,7 +165,7 @@ function LoginPage({ToQuizPage,ToSignup}) {
                         <div className="mb-3">
                             <label htmlFor="Password" className="form-label">Password</label>
                             <div className="input-group">
-                                <input id="Password" type={showPassword ? "text" : "password"} className="form-control" placeholder="●●●●●●●●"/>
+                                <input id="Password" type={showPassword ? "text" : "password"} className="form-control" placeholder="•••••••"/>
                                 <button type="button" className="btn btn-outline-secondary" onClick={() => setShowPassword(!showPassword)}>
                                     {showPassword ? "Hide" : "Show"}
                                 </button>
@@ -172,7 +185,7 @@ function LoginPage({ToQuizPage,ToSignup}) {
                             <button type="button" className="btn btn-link">Forgot password?</button>                       
                         </div>
 
-                            <button type="button" className="btn login-btn w-100" onClick={Login}>Sign in</button>
+                            <button type="button" className="login-btn w-100" onClick={Login}>Sign in</button>
                         </form>
 
                         <div className="text-center my-3 text-muted">or</div>
