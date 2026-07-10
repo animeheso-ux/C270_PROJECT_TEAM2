@@ -1,0 +1,29 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: learning_quest
+      MYSQL_ROOT_PASSWORD: RP738964$
+    ports:
+      - "3306:3306"
+
+  backend:
+    build: ./backend
+    restart: on-failure
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: RP738964$
+      DB_NAME: learning_quest
+      JWT_SECRET: 9d7c2f7ef8f1f6d7f2b4b58f68ce9f6e5f119f4a89c47dce24e615497f03c3bc
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
