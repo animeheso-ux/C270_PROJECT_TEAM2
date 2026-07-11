@@ -8,7 +8,7 @@ import SignUpPage from './SignupPage.jsx'
 import CreateQuizPage from './Createquiz.jsx'
 
 function App() {
-  const [Page,SetPage] = useState("Quiz")
+  const [Page,SetPage] = useState("Login")
 
   return (
     <>

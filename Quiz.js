@@ -64,6 +64,52 @@ for (let i = 0; i < options.length; i++) {
 })
 
 
+QuizRouter.get("/GetTopics",(req,res)=> {
+    database.query("SELECT * FROM modules",(err,results)=> {
+
+        if (err) {
+            throw err
+        }
+
+
+        res.json({result : results})
+
+    })
+})
+
+
+QuizRouter.post("/GetQuestions",(req,res)=> {
+    const {id} = req.body
+
+    database.query("SELECT * FROM questions WHERE module_id = ?",[id],(err,results)=> {
+
+        if (err) {
+            throw err
+        }
+
+
+        res.json({result : results})
+
+    })
+})
+
+QuizRouter.get("/GetOptions/:id",(req,res)=> {
+    const question_id = req.params.id
+    console.log(question_id)
+
+     database.query("SELECT * FROM options WHERE question_id = ?",[question_id],(err,results)=> {
+
+        if (err) {
+            throw err
+        }
+
+
+        res.json({result : results})
+
+    })
+
+})
+
 
 module.exports = {
     QuizRouter
