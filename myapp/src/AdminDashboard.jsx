@@ -82,23 +82,24 @@ function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.
             </div>
           </div>
 
-          {/* Card 2: System status */}
+          {/* Card 2: Quiz Analytics Tracker*/}
           <div className="col-12 col-md-6">
             <div className="card h-100 border border-secondary p-4 shadow-sm" style={{ backgroundColor: '#1e293b', color: '#f8fafc' }}>
               <div className="card-body d-flex flex-column justify-content-between">
                 <div>
-                  <h3 className="h4 fw-bold text-white mb-3">System Status</h3>
+                  <h3 className="h4 fw-bold text-white mb-3">Quiz Analytics</h3>
                   <p className="text-secondary mb-4">
-                    Monitor token expirations, database load flags, and endpoint latency.
+                    Monitor performance, review module attempts, and flag low pass rates.
                   </p>
                 </div>
                 <button className="btn btn-info text-dark fw-bold w-100 mt-auto"
                   onClick={() => setShowLogs(!showLogs)} >
-                  {showLogs ? "Hide Logs Overlay": "System Logs"}
+                  {showLogs ? "Hide Platform Metrics": "View Quiz Metrics"}
                 </button>
               </div>
             </div>
           </div>
+        </div>
           
         {/* --- INTERACTIVE DYNAMIC RENDER BLOCKS --- */}
 
@@ -133,25 +134,46 @@ function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.
           </div>
         )}
       
-
         {/* Action Toggle Component B: Diagnostic Status Terminal */}
         {showLogs && (
-          <div className="card border border-secondary p-4 shadow-sm mt-4" style={{ backgroundColor: '#020617', fontFamily: 'monospace' }}>
-            <h4 className="h5 fw-bold text-success mb-3">live_diagnostics_stream:~#</h4>
-            <div className="text-secondary small">
-              <p className="mb-1 text-success">[OK] MySQL Pool Endpoint Cluster Online: Port 3306</p>
-              <p className="mb-1 text-success">[OK] Cryptographic Module: bcrypt Active (10 SaltRounds)</p>
-              <p className="mb-1 text-info">[JWT] Verification Handler listening for Authorization: Bearer tokens</p>
-              <p className="mb-0 text-warning">[WARN] System latency: 0.02ms. Route paths nominal.</p>
+          <div className="card border border-secondary p-4 shadow-sm mt-4" style={{ backgroundColor: '#1e293b' }}>
+            <h4 className="h5 fw-bold text-info mb-3">Quiz Performance Hub</h4>
+            <div className="table-responsive">
+              <table className="table table-dark table-hover mb-0 border-secondary align-middle">
+                <thead>
+                  <tr>
+                    <th>Module Title</th>
+                    <th>Attempts</th>
+                    <th>Avg Score</th>
+                    <th>Difficulty</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Introduction to JavaScript</td>
+                    <td>142</td>
+                    <td className="text-info fw-bold">78%</td>
+                    <td><span className="badge bg-primary">Medium</span></td>
+                  </tr>
+                  <tr>
+                    <td>Advanced Quantum Physics</td>
+                    <td>38</td>
+                    <td className="text-danger fw-bold">42%</td>
+                    <td><span className="badge bg-warning text-dark">Hard</span></td>
+                  </tr>
+                  <tr>
+                    <td>Basic Algebra Foundations</td>
+                    <td>210</td>
+                    <td className="text-success fw-bold">89%</td>
+                    <td><span className="badge bg-success">Easy</span></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         )}
-
-        </div>
       </div>
-
     </div>
   );
 }
-
-export default AdminDashboard;
+export default AdminDashboard
