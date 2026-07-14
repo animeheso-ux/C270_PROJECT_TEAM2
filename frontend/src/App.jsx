@@ -13,20 +13,28 @@ import AdminDashboard from './AdminDashboard.jsx'
 import Navbar from './Navbar.jsx';
 
 function App() {
-    const [Page,SetPage] = useState("Login")
+  const [Page,SetPage] = useState("Login")
 
+  // Checks who is clicking "Learning Quest" and handles it contextually
+  const handleNavbarBrandClick = () => {
+    if (Page === "QuizCreation" || Page === "Teacher") {
+      SetPage("Teacher"); // Teachers go back to their dashboard panel
+    } else if (Page === "Quiz") {
+      SetPage("Quiz"); // Students reset to their base quiz track hub
+    }
+  };
 
   return (
     <>
     <div>
-      {localStorage.getItem("Token") &&
-            <Navbar 
+      {Page !== "Login" && Page !== "Signup" && (
+          <Navbar 
         ToLogin={() => SetPage("Login")} 
         ToSignup={() => SetPage("Signup")}
-        ToLogout={() => { SetPage("Login")
-        }}
+        ToLogout={() => { SetPage("Login")}}
+        OnBrandClick={handleNavbarBrandClick}
       />
-      }
+      )}
       
     <div>
       {Page === "Login" && (
