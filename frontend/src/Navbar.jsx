@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const Navbar = ({ isLoggedIn, ToLogin, ToSignup, ToLogout }) => {
+const Navbar = ({ isLoggedIn, ToLogin, ToSignup, ToLogout,OnBrandClick }) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   function Logout() {
@@ -15,8 +15,11 @@ const Navbar = ({ isLoggedIn, ToLogin, ToSignup, ToLogout }) => {
 
   return (
     <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 50px', position: 'relative' }}>
-      <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>Learning Quest</div>
-      
+      <div 
+        onClick={OnBrandClick} 
+        style={{ fontWeight: 'bold', fontSize: '1.2rem', cursor: 'pointer', userSelect: 'none' }}>Learning Quest
+      </div>
+
       <div style={{ display: 'flex', gap: '15px' }}>
         {isLoggedIn ? (
           <div style={{ position: 'relative' }}>

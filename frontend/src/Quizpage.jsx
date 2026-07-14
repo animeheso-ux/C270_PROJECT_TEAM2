@@ -202,7 +202,7 @@ function QuizPage({ ToLogin, ToQuizCreation }) {
 
             <div className="Quiz-LeftPanel">
 
-                <div className="Quiz-Brand">Learning Quest</div>
+                <div className="Quiz-Brand"  onClick={HandleRestart} style={{ cursor: 'pointer' }}>Learning Quest</div>
 
                 {OnTopicScreen && (
                     <div className="Quiz-LeftContent">
