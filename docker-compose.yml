@@ -3,7 +3,7 @@ services:
     image: mysql:8.4
     environment:
       MYSQL_DATABASE: learning_quest
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: RP738964$
     ports:
       - "3307:3306"
     volumes:
@@ -16,7 +16,7 @@ services:
     environment:
       DB_HOST: mysql
       DB_USER: root
-      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PASSWORD: RP738964$
       DB_NAME: learning_quest
       JWT_SECRET: 9d7c2f7ef8f1f6d7f2b4b58f68ce9f6e5f119f4a89c47dce24e615497f03c3bc
     ports:
