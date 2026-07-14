@@ -219,26 +219,6 @@ body{
     transform: translateY(-2px);
 }
 
-.google-btn{
-    height:46px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap:10px;
-
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background:#fff;
-    color:#444;
-    font-weight: 500;
-    font-size:0.95rem;
-    transition:all 0.3s ease;
-}
-
-.google-btn:hover { 
-    background: #f5f5f5;
-}
-
 .signup-line{
     color: #666;
     margin-top: 1.5rem;
