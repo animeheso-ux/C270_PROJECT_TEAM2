@@ -13,10 +13,17 @@ function TeacherDashboard({ ToLogin, ToCreateQuiz }) {
   const [correctOpt, setCorrectOpt] = useState("Option 3");
 
   // Dashboard Table Data
-  const dynamicQuizzes = [
+  const [quizzes, setQuizzes] = useState([
     { id: 1, name: "Python Basics", questions: 5, responses: 14 },
     { id: 2, name: "JavaScript Arrays", questions: 8, responses: 22 }
-  ];
+  ]);
+
+  // Handler for target deletion
+  const handleDeleteQuiz = (id) => {
+    if (window.confirm("Are you sure you want to delete this quiz module?")) {
+      setQuizzes(prev => prev.filter(quiz => quiz.id !== id));
+    }
+  };
 
   // --- VIEW 1: MAIN TEACHER DASHBOARD HUB ---
   if (subView === "dashboard") {
@@ -73,20 +80,35 @@ function TeacherDashboard({ ToLogin, ToCreateQuiz }) {
                     <th>Quiz Module Reference</th>
                     <th>Configured Questions</th>
                     <th>Student Submissions</th>
-                    <th className="text-end">Context Status</th>
+                    <th >Module Status</th>
+                    <th className="text-end">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {dynamicQuizzes.map((quiz) => (
-                    <tr key={quiz.id}>
-                      <td className="fw-bold text-white">{quiz.name}</td>
-                      <td>{quiz.questions} Questions</td>
-                      <td>{quiz.responses} Active Submissions</td>
-                      <td className="text-end">
-                        <span className="badge bg-success-subtle text-success rounded-pill px-3 py-2">LIVE</span>
-                      </td>
+                  {quizzes.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="text-center text-muted py-4">No active quiz modules found.</td>
                     </tr>
-                  ))}
+                  ) : (
+                    quizzes.map((quiz) => (
+                      <tr key={quiz.id}>
+                        <td className="fw-bold text-white">{quiz.name}</td>
+                        <td>{quiz.questions} Questions</td>
+                        <td>{quiz.responses} Active Submissions</td>
+                        <td>
+                          <span className="badge bg-success-subtle text-success rounded-pill px-3 py-2">LIVE</span>
+                        </td>
+                        <td className="text-end">
+                          <button 
+                            className="btn btn-sm btn-outline-danger fw-semibold"
+                            onClick={() => handleDeleteQuiz(quiz.id)}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
