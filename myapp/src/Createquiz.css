@@ -1,0 +1,369 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --ink-black: #0b0b12;
+    --ink-black-2: #000000;
+    --white: #ffffff;
+    --text-dark: #111827;
+    --text-gray: #6b7280;
+    --text-gray-light: #9ca3af;
+    --accent-indigo: #4f46e5;
+    --accent-indigo-soft: #eef2ff;
+    --icon-box: #1c1c24;
+    --border-light: #e5e7eb;
+    --wrong-red: #dc2626;
+    --wrong-red-soft: #fef2f2;
+}
+
+body {
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+.CQ-Shell {
+    display: grid;
+    grid-template-columns: 38% 62%;
+    min-height: 100vh;
+}
+
+/* ---------- Left panel ---------- */
+
+.CQ-LeftPanel {
+    background: linear-gradient(160deg, var(--ink-black) 0%, var(--ink-black-2) 100%);
+    color: var(--white);
+    padding: 56px 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+.CQ-Brand {
+    position: absolute;
+    top: 48px;
+    left: 64px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--text-gray-light);
+    letter-spacing: 0.02em;
+}
+
+.CQ-LeftContent {
+    max-width: 420px;
+}
+
+.CQ-Headline {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 38px;
+    line-height: 1.15;
+    margin-bottom: 20px;
+}
+
+.CQ-Subtext {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-gray-light);
+    margin-bottom: 36px;
+}
+
+.CQ-StepList {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    margin-bottom: 40px;
+}
+
+.CQ-Step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.CQ-StepBadge {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 10px;
+    background: var(--icon-box);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--accent-indigo);
+}
+
+.CQ-StepTitle {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.CQ-StepSub {
+    font-size: 13px;
+    color: var(--text-gray-light);
+    margin-top: 2px;
+}
+
+.CQ-GhostButton {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.CQ-GhostButton:hover {
+    border-color: rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.05);
+}
+
+.CQ-GhostButton:focus-visible {
+    outline: 2px solid var(--accent-indigo);
+    outline-offset: 2px;
+}
+
+/* ---------- Right panel ---------- */
+
+.CQ-RightPanel {
+    background: var(--white);
+    padding: 56px;
+    display: flex;
+    justify-content: center;
+}
+
+.CQ-Form {
+    width: 100%;
+    max-width: 620px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.CQ-FormHeader {
+    position: sticky;
+    top: 0;
+    background: var(--white);
+    padding-bottom: 16px;
+    display: flex;
+    gap: 12px;
+    z-index: 2;
+}
+
+.CQ-TopicInput {
+    flex: 1;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--text-dark);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    padding: 14px 16px;
+}
+
+.CQ-TopicInput:focus {
+    outline: none;
+    border-color: var(--accent-indigo);
+}
+
+.CQ-AddButton {
+    background: var(--text-dark);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 0 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s ease;
+}
+
+.CQ-AddButton:hover {
+    background: #000000;
+}
+
+.CQ-QuestionList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.CQ-QuestionCard {
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.CQ-QuestionCardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.CQ-QuestionNumber {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.CQ-RemoveButton {
+    background: transparent;
+    color: var(--text-gray-light);
+    padding: 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+}
+
+.CQ-RemoveButton:hover {
+    color: var(--wrong-red);
+    background: var(--wrong-red-soft);
+}
+
+.CQ-Input {
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--text-dark);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+.CQ-Input:focus {
+    outline: none;
+    border-color: var(--accent-indigo);
+}
+
+.CQ-OptionsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.CQ-AnswerRow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.CQ-AnswerLabel {
+    font-size: 13px;
+    color: var(--text-gray);
+    white-space: nowrap;
+}
+
+.CQ-AnswerChips {
+    display: flex;
+    gap: 8px;
+}
+
+.CQ-Chip {
+    background: var(--white);
+    border: 1px solid var(--border-light);
+    color: var(--text-gray);
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.CQ-Chip:hover {
+    border-color: var(--accent-indigo);
+}
+
+.CQ-Chip.is-selected {
+    background: var(--accent-indigo);
+    border-color: var(--accent-indigo);
+    color: var(--white);
+}
+
+.CQ-Chip:focus-visible {
+    outline: 2px solid var(--accent-indigo);
+    outline-offset: 2px;
+}
+
+.CQ-PrimaryButton {
+    width: 100%;
+    background: var(--text-dark);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.CQ-PrimaryButton:hover {
+    background: #000000;
+}
+
+.CQ-PrimaryButton:focus-visible {
+    outline: 2px solid var(--accent-indigo);
+    outline-offset: 2px;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 900px) {
+    .CQ-Shell {
+        grid-template-columns: 1fr;
+    }
+
+    .CQ-LeftPanel {
+        position: static;
+        height: auto;
+        padding: 40px 24px 32px;
+    }
+
+    .CQ-Brand {
+        position: static;
+        margin-bottom: 24px;
+    }
+
+    .CQ-Headline {
+        font-size: 28px;
+    }
+
+    .CQ-RightPanel {
+        padding: 32px 24px;
+    }
+
+    .CQ-OptionsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+    }
+}

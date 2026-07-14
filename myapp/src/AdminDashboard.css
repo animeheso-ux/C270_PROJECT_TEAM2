@@ -1,0 +1,46 @@
+/* Custom theme accents to overlay on top of Bootstrap */
+.admin-bg {
+    background-color: #0b0f19;
+    min-height: 100vh;
+    color: #f8fafc;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.admin-theme {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-bottom: 2px solid #38bdf8;
+}
+
+.admin-card {
+    background-color: #1e293b;
+    border: 1px solid #334155 !important;
+    border-radius: 12px;
+    transition: transform 0.2s ease;
+}
+
+.admin-card:hover {
+    transform: translateY(-2px);
+}
+
+.table-dark-custom {
+    --bs-table-bg: #1e293b ;
+    --bs-table-border-color: #334155;
+    color: #e2e8f0 !important;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.logout-btn {
+    background: transparent;
+    border: 1px solid #f43f5e;
+    color: #f43f5e;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+    background: #f43f5e;
+    color: white;
+}

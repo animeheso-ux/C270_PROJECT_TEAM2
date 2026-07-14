@@ -1,0 +1,6 @@
+{
+  "ignore": [
+    "myapp/dist/**",
+    "node_modules/**"
+  ]
+}

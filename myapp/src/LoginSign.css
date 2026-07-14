@@ -1,0 +1,264 @@
+:root {
+    --accent:#6d5df6;
+    --bg-dark:#090909;
+    --bg-card:#ffffff;
+    --font-sans: 'Inter', sans-serif;
+}
+
+*{margin:0; padding:0; box-sizing:border-box;}
+
+html,
+body,
+#root{
+    min-height:100vh;
+    width:100%;
+}
+
+body{
+    background: #111;
+    font-family: var(--font-sans);
+}
+
+.page-container{
+    min-height: 100vh;
+    display: flex; 
+    justify-content: center;
+    align-items: center; 
+    padding: 2rem; 
+}
+
+.login-wrapper{
+    width: 100%;
+    max-width: 1200px;
+    background:#fff;
+    border-radius: 20px;
+    overflow:hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,.35)
+}
+
+.login-wrapper .left-panel{
+    background:
+        radial-gradient(circle at top left,rgba(109,93,246,.18),transparent 50%),
+        linear-gradient(140deg,#050505,#0d0d0d,#171717);
+    color:#fff;
+    padding: 4.5rem 4rem;
+    min-height: 600px;
+}
+
+/*Learning Quest*/
+.left-panel h2{
+    font-size:1.5rem;
+    font-weight: 600;
+    margin-left: 1.5rem;
+    margin-bottom: 1.25rem;
+    color:#9a9a9a;
+}
+
+/*master your quiz*/
+.left-panel h1{
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color:#fff;
+    margin-bottom: 1.25rem;
+    margin-left: 1.5rem;
+    max-width: 100%; 
+}
+
+.left-panel p{
+    max-width: 100%;
+    color: #9a9a9a;
+    line-height: 1.7;
+    font-size:0.95rem;
+    margin-bottom: 2.5rem;
+    margin-left: 1.5rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    margin-left: 1.5rem;
+}
+
+.feature-icon{
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    background: rgba(255, 255, 255,0.07);
+    color: #7c8aa5;
+}
+
+.left-panel h5{
+    font-size: 0.95rem;
+    font-weight: 600;
+    color:#fff;
+    margin-bottom: 2px;
+}
+
+.left-panel small{
+    font-size: 0.8rem;
+    color:#8a8a8a;
+    line-height: 1.4;
+}
+
+/*Right panel*/
+.login-wrapper .login-card{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    padding:4.5rem;
+}
+
+.login-card h1{
+    font-size:2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color:#111;
+}
+
+.login-card .text-muted{
+    color:#777;
+    font-size: 0.95rem;
+}
+
+.login-card .form-label{
+    font-size: 0.9rem;
+    color:#333;
+    font-weight: 500;
+    margin-bottom: 0 1rem;
+}
+
+.form-control{
+    height:46px;
+    width: 100%;
+    border-radius: 10px;
+    border:1px solid #ddd;
+    font-size: 0.95rem;
+    padding: 0 1rem;
+}
+
+.form-control:focus{
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(109,93,246,.15);
+    outline: none;
+}
+
+.input-group .form-control{
+    border-radius: 10px 0px 0px 10px;
+    border-right: none;
+}
+
+.input-group .btn{
+    border-radius: 0px 10px 10px 0px;
+    border: 1px solid #ddd;
+    background:#fff;
+    color:#666;
+    font-size: 0.85rem;
+    padding: 0 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.login-card .btn-link{
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.login-card .btn-link:hover{
+    text-decoration: underline;
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-check-input{
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.form-check-label{
+    font-size: 0.9rem;
+    color:#444;
+    cursor: pointer;
+    user-select: none;
+}
+
+.login-btn{
+    height:48px;
+    border: none;
+    border-radius: 10px;
+    background:#000;
+    color:#fff;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.login-btn:hover{
+    background: #222;
+    color:#fff;
+    transform: translateY(-2px);
+}
+
+.google-btn{
+    height:46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:10px;
+
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background:#fff;
+    color:#444;
+    font-weight: 500;
+    font-size:0.95rem;
+    transition:all 0.3s ease;
+}
+
+.google-btn:hover { 
+    background: #f5f5f5;
+}
+
+.signup-line{
+    color: #666;
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.signup-link{
+    color: var(--accent);
+    font-weight: 700;
+    cursor: pointer;
+    margin-left:6px
+}
+
+.signup-link:hover{
+    text-decoration: underline;
+}
+
+.error-message{
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
