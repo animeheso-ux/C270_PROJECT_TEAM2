@@ -1,10 +1,23 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 
 // Safe props fallback implementation remains intact
 function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.location.reload(); } }) {
   // Added local states to handle panel toggling
   const [showUsers, setShowUsers] = useState(false);
   const [showLogs, setShowLogs] = useState(false);
+  const [users,SetUsers] = useState("")
+
+
+  async function GetUsers() {
+    const response = await fetch("/GetUsers")
+
+    const data = await response.json()
+
+    SetUsers(data.result)
+  }
+
+
   
   // Mock database entries for the Access Control toggle
   const platformUsers = [
@@ -12,6 +25,11 @@ function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.
     { id: 2, name: "teacher_testing", email: "2540104@rp.edu.sg", role: "teacher" },
     { id: 3, name: "admin_testing", email: "2540104@admin.edu.sg", role: "admin" }
   ];
+
+
+  useEffect(()=> {
+    GetUsers()
+  },[])
 
   return (
     <div className="min-vh-100 py-5" style={{ backgroundColor: '#0f172a', color: '#f8fafc', fontFamily: 'sans-serif' }}>
@@ -89,9 +107,9 @@ function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.
                   </tr>
                 </thead>
                 <tbody>
-                  {platformUsers.map((u) => (
+                  {users.map((u) => (
                     <tr key={u.id}>
-                      <td className="fw-bold text-white">{u.name}</td>
+                      <td className="fw-bold text-white">{u.username}</td>
                       <td>{u.email}</td>
                       <td>
                         <span className={`badge ${u.role === 'admin' ? 'bg-danger' : u.role === 'teacher' ? 'bg-primary' : 'bg-secondary'}`}>

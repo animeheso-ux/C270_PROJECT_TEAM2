@@ -27,7 +27,15 @@ const database = mysql.createConnection({
     console.log("MYSQL CONNECTED!")
  })
 
+DatabaseRouter.get("/GetUsers",(req,res)=> {
+    database.query("SELECT * FROM users WHERE role != 'admin' ",(err,results)=> {
+        if (err) {
+            throw err
+        }
 
+        res.json({result : results})
+    })
+})
 
 
 DatabaseRouter.post("/CreateAccount",(req,res)=> {
@@ -103,7 +111,7 @@ DatabaseRouter.post("/CreateAccount",(req,res)=> {
 
             const Token = jsonwebtoken.sign(payload,process.env.JWT_SECRET || "YOUR_SECRET_KEY",{expiresIn : "1hr"})
 
-            
+
             res.json({message : "success",token : Token,role : user.role})
         }else {
             res.json({message : "incorrect password"})
