@@ -36,12 +36,6 @@ function TeacherDashboard({ ToLogin, ToCreateQuiz }) {
             <h1 className="h3 fw-bold mb-1 text-white">Teacher Dashboard</h1>
             <p className="mb-0 text-secondary">Academic Management Panel</p>
           </div>
-          <button
-            className="btn btn-outline-danger fw-semibold px-4"
-            onClick={() => { localStorage.clear(); ToLogin(); }}
-          >
-            Log Out
-          </button>
         </header>
 
         {/* Content Workspace Matrix */}
