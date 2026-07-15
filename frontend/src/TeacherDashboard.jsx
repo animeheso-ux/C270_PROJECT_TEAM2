@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './TeacherDashboard.css';
 
-function TeacherDashboard({ ToLogin , ToCreateQuiz }) {
+function TeacherDashboard({ ToLogin, ToCreateQuiz }) {
   // Local view management: toggles between 'dashboard' and 'create_quiz'
   const [subView, setSubView] = useState("dashboard");
   // Form Input States
@@ -22,15 +22,15 @@ function TeacherDashboard({ ToLogin , ToCreateQuiz }) {
   if (subView === "dashboard") {
     return (
       <div className="teacher-hub-container">
-        
+
         {/* Header Block */}
         <header className="container bg-dark bg-gradient border border-secondary rounded-3 p-4 mb-4 d-flex justify-content-between align-items-center shadow">
           <div>
             <h1 className="h3 fw-bold mb-1 text-white">Teacher Dashboard</h1>
             <p className="mb-0 text-secondary">Academic Management Panel</p>
           </div>
-          <button 
-            className="btn btn-outline-danger fw-semibold px-4" 
+          <button
+            className="btn btn-outline-danger fw-semibold px-4"
             onClick={() => { localStorage.clear(); ToLogin(); }}
           >
             Log Out
@@ -39,7 +39,7 @@ function TeacherDashboard({ ToLogin , ToCreateQuiz }) {
 
         {/* Content Workspace Matrix */}
         <div className="container">
-          
+
           {/* Dashboard Summary Cards */}
           <div className="row g-4 mb-4">
             <div className="col-12 col-md-4">
@@ -53,7 +53,7 @@ function TeacherDashboard({ ToLogin , ToCreateQuiz }) {
               <div className="card border border-secondary p-4 h-100 shadow-sm d-flex flex-column justify-content-center align-items-start" style={{ backgroundColor: '#1e293b' }}>
                 <h4 className="h5 fw-bold text-white mb-2">New Quiz</h4>
                 <p className="text-secondary small mb-3">Strat a new quiz with rules.</p>
-                <button 
+                <button
                   className="btn btn-info text-dark fw-bold px-4"
                   onClick={ToCreateQuiz}
                 >

@@ -1,16 +1,14 @@
 const express = require("express")
-const {database} = require("./database")
+const { database } = require("./database")
 
 const QuizRouter = express.Router()
 
 
+QuizRouter.post("/CreateQuiz", async (req, res) => {
+    const { Quiz, Topic } = req.body
 
 
-QuizRouter.post("/CreateQuiz",async(req,res)=> {
-    const {Quiz,Topic} = req.body
-
-
-      try {
+    try {
         await database.promise().beginTransaction();
 
         const [existing] = await database.promise().query(
@@ -40,15 +38,12 @@ QuizRouter.post("/CreateQuiz",async(req,res)=> {
 
             const options = Object.values(quiz.Options);
 
-for (let i = 0; i < options.length; i++) {
-    await database.promise().query(
-        "INSERT INTO options (question_id, option_text) VALUES (?, ?)",
-        [questionId, options[i]]
-    );
-
-
-
-}
+            for (let i = 0; i < options.length; i++) {
+                await database.promise().query(
+                    "INSERT INTO options (question_id, option_text) VALUES (?, ?)",
+                    [questionId, options[i]]
+                );
+            }
         }
 
         await database.promise().commit();
@@ -60,53 +55,45 @@ for (let i = 0; i < options.length; i++) {
         res.status(500).json({ status: "error" });
     }
 
-    
+
 })
 
 
 
 
-QuizRouter.get("/GetTopics",(req,res)=> {
-    database.query("SELECT * FROM modules",(err,results)=> {
-
-        if (err) {
-            throw err
-        }
+QuizRouter.get("/GetTopics", (req, res) => {
+    if (err) {
+        return res.status(500).json({ error: err.message });
+    }
 
 
-        res.json({result : results})
-
-    })
+    res.json({ result: results })
 })
 
 
-QuizRouter.post("/GetQuestions",(req,res)=> {
-    const {id} = req.body
+QuizRouter.post("/GetQuestions", (req, res) => {
+    const { id } = req.body
 
-    database.query("SELECT * FROM questions WHERE module_id = ?",[id],(err,results)=> {
-
-        if (err) {
-            throw err
-        }
+    if (err) {
+        return res.status(500).json({ error: err.message });
+    }
 
 
-        res.json({result : results})
-
-    })
+    res.json({ result: results })
 })
 
-QuizRouter.get("/GetOptions/:id",(req,res)=> {
+QuizRouter.get("/GetOptions/:id", (req, res) => {
     const question_id = req.params.id
     console.log(question_id)
 
-     database.query("SELECT * FROM options WHERE question_id = ?",[question_id],(err,results)=> {
+    database.query("SELECT * FROM options WHERE question_id = ?", [question_id], (err, results) => {
 
         if (err) {
-            throw err
+            return res.status(500).json({ error: err.message });
         }
 
 
-        res.json({result : results})
+        res.json({ result: results })
 
     })
 

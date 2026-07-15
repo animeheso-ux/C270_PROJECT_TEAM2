@@ -6,7 +6,7 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN npm ci
+RUN npm ci && npm install cors
 
 EXPOSE 3000
 
