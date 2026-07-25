@@ -1,27 +1,50 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './TeacherDashboard.css';
 
 function TeacherDashboard({ ToLogin , ToCreateQuiz }) {
-  // Local view management: toggles between 'dashboard' and 'create_quiz'
   const [subView, setSubView] = useState("dashboard");
-  // Form Input States
-  const [moduleName, setModuleName] = useState("Python");
-  const [question, setQuestion] = useState("What is pandas");
-  const [opt1, setOpt1] = useState("A panda");
-  const [opt2, setOpt2] = useState("pandan cake");
-  const [opt3, setOpt3] = useState("A python package");
-  const [correctOpt, setCorrectOpt] = useState("Option 3");
+  const [quizzes, setQuizzes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Dashboard Table Data
-  const [quizzes, setQuizzes] = useState([
-    { id: 1, name: "Python Basics", questions: 5, responses: 14 },
-    { id: 2, name: "JavaScript Arrays", questions: 8, responses: 22 }
-  ]);
+  async function LoadTeacherDashboard() {
+    try {
+        setLoading(true);
+        setError("");
+
+        const token = localStorage.getItem("Token");
+
+        const response = await fetch("/TeacherDashboardData", {
+            headers: {
+                authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.status !== "success") {
+            throw new Error(data.message || "Unable to load teacher dashboard.");
+        }
+
+        setQuizzes(data.result || []);
+    } catch (error) {
+        console.error(error);
+        setError(error.message);
+    } finally {
+        setLoading(false);
+    }
+}
+useEffect(() => {
+
+    LoadTeacherDashboard();
+
+}, []);
 
   // Handler for target deletion
   const handleDeleteQuiz = (id) => {
     if (window.confirm("Are you sure you want to delete this quiz module?")) {
-      setQuizzes(prev => prev.filter(quiz => quiz.id !== id));
+      setQuizzes(prev => prev.filter(quiz => quiz.module_id !== id));
     }
   };
 
@@ -46,7 +69,7 @@ function TeacherDashboard({ ToLogin , ToCreateQuiz }) {
             <div className="col-12 col-md-4">
               <div className="card border border-secondary p-4 h-100 shadow-sm" style={{ backgroundColor: '#1e293b' }}>
                 <h6 className="text-uppercase text-muted small fw-bold">Active Modules</h6>
-                <p className="display-6 fw-bold my-2 text-info">2</p>
+                <p className="display-6 fw-bold my-2 text-info">{quizzes.length}</p>
                 <small className="text-success">● Module Control</small>
               </div>
             </div>
@@ -63,6 +86,14 @@ function TeacherDashboard({ ToLogin , ToCreateQuiz }) {
               </div>
             </div>
           </div>
+
+          {loading && (
+              <p className="text-secondary">Loading dashboard data...</p>
+          )}
+
+          {error && (
+              <div className="alert alert-danger">{error}</div>
+          )}
 
           {/* Active Quizzes Registry Table */}
           <div className="card border border-secondary p-4 shadow-sm" style={{ backgroundColor: '#1e293b' }}>
@@ -85,17 +116,23 @@ function TeacherDashboard({ ToLogin , ToCreateQuiz }) {
                     </tr>
                   ) : (
                     quizzes.map((quiz) => (
-                      <tr key={quiz.id}>
-                        <td className="fw-bold text-white">{quiz.name}</td>
-                        <td>{quiz.questions} Questions</td>
-                        <td>{quiz.responses} Active Submissions</td>
+                      <tr key={quiz.module_id}>
+                        <td className="fw-bold text-white">{quiz.module_name}</td>
+                        <td>{quiz.question_count} Questions</td>
+                        <td>{quiz.submission_count} Submissions</td>
                         <td>
-                          <span className="badge bg-success-subtle text-success rounded-pill px-3 py-2">LIVE</span>
+                          <span
+                              className={`badge rounded-pill px-3 py-2 ${
+                                  quiz.status === "published"
+                                      ? "bg-success-subtle text-success"
+                                      : "bg-warning-subtle text-warning"
+                              }`}>{quiz.submission_count >0  ? "LIVE" : " READY"}
+                          </span>
                         </td>
                         <td className="text-end">
                           <button 
                             className="btn btn-sm btn-outline-danger fw-semibold"
-                            onClick={() => handleDeleteQuiz(quiz.id)}
+                            onClick={() => handleDeleteQuiz(quiz.module_id)}
                           >
                             Delete
                           </button>

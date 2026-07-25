@@ -6,15 +6,10 @@ function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.
   // Added local states to handle panel toggling
   const [showUsers, setShowUsers] = useState(false);
   const [showLogs, setShowLogs] = useState(false);
-  const [users,SetUsers] = useState("")
-
-  // Mock database entries for the Access Control toggle
-  const platformUsers = [
-    { id: 1, name: "xr", email: "2540104@myrp.edu.sg", role: "student" },
-    { id: 2, name: "teacher_testing", email: "2540104@rp.edu.sg", role: "teacher" },
-    { id: 3, name: "admin_testing", email: "2540104@admin.edu.sg", role: "admin" }
-  ];
-
+  const [users, SetUsers] = useState([])
+  const [quizAnalytics, setQuizAnalytics] = useState([]);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [analyticsError, setAnalyticsError] = useState("");
 
   async function GetUsers() {
     try{
@@ -46,6 +41,36 @@ function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.
   useEffect(()=> {
     GetUsers()
   },[])
+
+
+  async function GetQuizAnalytics() {
+    try {
+        setAnalyticsLoading(true);
+        setAnalyticsError("");
+
+        const token = localStorage.getItem("Token");
+
+        const response = await fetch("/AdminQuizAnalytics", {
+            headers: {
+                authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.status !== "success") {
+            throw new Error(data.message || "Unable to load quiz analytics.");
+        }
+
+        setQuizAnalytics(data.result || []);
+    } catch (error) {
+        console.error(error);
+        setAnalyticsError(error.message);
+    } finally {
+        setAnalyticsLoading(false);
+    }
+}
 
   return (
     <div className="min-vh-100 py-5" style={{ backgroundColor: '#0f172a', color: '#f8fafc', fontFamily: 'sans-serif' }}>
@@ -93,8 +118,10 @@ function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.
                   </p>
                 </div>
                 <button className="btn btn-info text-dark fw-bold w-100 mt-auto"
-                  onClick={() => setShowLogs(!showLogs)} >
-                  {showLogs ? "Hide Platform Metrics": "View Quiz Metrics"}
+                  onClick={() => {
+                      const nextValue = !showLogs;setShowLogs(nextValue);
+                      if (nextValue) {GetQuizAnalytics();}
+                  }} > {showLogs ? "Hide Platform Metrics": "View Quiz Metrics"}
                 </button>
               </div>
             </div>
@@ -149,25 +176,54 @@ function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>Introduction to JavaScript</td>
-                    <td>142</td>
-                    <td className="text-info fw-bold">78%</td>
-                    <td><span className="badge bg-primary">Medium</span></td>
-                  </tr>
-                  <tr>
-                    <td>Advanced Quantum Physics</td>
-                    <td>38</td>
-                    <td className="text-danger fw-bold">42%</td>
-                    <td><span className="badge bg-warning text-dark">Hard</span></td>
-                  </tr>
-                  <tr>
-                    <td>Basic Algebra Foundations</td>
-                    <td>210</td>
-                    <td className="text-success fw-bold">89%</td>
-                    <td><span className="badge bg-success">Easy</span></td>
-                  </tr>
-                </tbody>
+                  {analyticsLoading ? (
+                      <tr>
+                          <td colSpan="4" className="text-center text-secondary py-4">
+                              Loading quiz analytics...
+                          </td>
+                      </tr>
+                  ) : analyticsError ? (
+                      <tr>
+                          <td colSpan="4" className="text-center text-danger py-4">
+                              {analyticsError}
+                          </td>
+                      </tr>
+                  ) : quizAnalytics.length === 0 ? (
+                      <tr>
+                          <td colSpan="4" className="text-center text-secondary py-4">
+                              No quiz attempts have been submitted.
+                          </td>
+                      </tr>
+                  ) : (
+                      quizAnalytics.map((quiz) => (
+                          <tr key={quiz.module_id}>
+                              <td>{quiz.module_name}</td>
+
+                              <td>{quiz.attempts}</td>
+
+                              <td className="text-info fw-bold">
+                                  {Number(quiz.average_score || 0).toFixed(1)}%
+                              </td>
+
+                              <td>
+                                  <span
+                                      className={`badge ${
+                                        quiz.difficulty === "Easy"
+                                            ? "bg-success"
+                                            : quiz.difficulty === "Medium"
+                                            ? "bg-primary"
+                                            : quiz.difficulty === "Hard"
+                                            ? "bg-danger"
+                                            : "bg-secondary"
+                                    }`}
+                                  >
+                                      {quiz.difficulty}
+                                  </span>
+                              </td>
+                          </tr>
+                      ))
+                  )}
+              </tbody>
               </table>
             </div>
           </div>

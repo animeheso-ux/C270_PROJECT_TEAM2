@@ -63,6 +63,8 @@ function QuizPage({ToLogin,ToQuizCreation}) {
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
   const [activeModuleName, setActiveModuleName] = useState("");
+  const [activeModuleId, setActiveModuleId] = useState(null);
+  const [submissionSaved, setSubmissionSaved] = useState(false);
 
     async function GetToken() {
         const Token = localStorage.getItem("Token")
@@ -100,6 +102,48 @@ function QuizPage({ToLogin,ToQuizCreation}) {
 
         SetTopics(data.result)
     }
+
+    async function submitQuizAttempt(
+    moduleId,
+    finalScore,
+    totalQuestions
+) {
+    try {
+        const token = localStorage.getItem("Token");
+
+        if (!token) {
+            throw new Error("Login token was not found.");
+        }
+
+        const response = await fetch("/SubmitQuiz", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                moduleId: moduleId,
+                score: finalScore,
+                totalQuestions: totalQuestions
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.status !== "success") {
+            throw new Error(
+                data.message || "Unable to submit quiz."
+            );
+        }
+
+        console.log("Quiz submitted:", data);
+
+        return data;
+    } catch (error) {
+        console.error("Submit quiz error:", error);
+        throw error;
+    }
+}
 
     async function LoadQuestions(module_id) {
          const response = await fetch("/GetQuestions",{
@@ -140,8 +184,10 @@ function QuizPage({ToLogin,ToQuizCreation}) {
         setFeedback("")
         setScore(0)
         setFinished(false)
-        setActiveModuleName(module_name)
-        LoadQuestions(module_id)
+        setSubmissionSaved(false);
+        setActiveModuleId(module_id);
+        setActiveModuleName(module_name);
+        LoadQuestions(module_id);
     }
 
     function HandleAnswerClick(optionKey) {
@@ -161,26 +207,40 @@ function QuizPage({ToLogin,ToQuizCreation}) {
         }
     }
 
-    function HandleNext() {
+    async function HandleNext() {
         if (currentIndex + 1 < questions.length) {
-            setCurrentIndex(currentIndex + 1)
-            setSelectedAnswer(null)
-            setFeedback("")
-        }
-        else {
-            setFinished(true)
+            setCurrentIndex(currentIndex + 1);
+            setSelectedAnswer(null);
+            setFeedback("");
+        } else {
+            try {
+                await submitQuizAttempt(
+                    activeModuleId,
+                    score,
+                    questions.length
+                );
+
+                setFinished(true);
+            } catch (error) {
+                alert(
+                    error.message ||
+                    "Quiz completed, but the result could not be saved."
+                );
+            }
         }
     }
 
     function HandleRestart() {
-        setQuestions([])
-        setCurrentIndex(0)
-        setSelectedAnswer(null)
-        setFeedback("")
-        setScore(0)
-        setFinished(false)
-        setActiveModuleName("")
-    }
+    setQuestions([]);
+    setCurrentIndex(0);
+    setSelectedAnswer(null);
+    setFeedback("");
+    setScore(0);
+    setFinished(false);
+    setActiveModuleName("");
+    setActiveModuleId(null);
+    setSubmissionSaved(false);
+}
 
 
 
@@ -353,7 +413,12 @@ function QuizPage({ToLogin,ToQuizCreation}) {
                             {Math.round((score / questions.length) * 100) > 50 ? <h1>Well done!</h1> : <h1>Try harder next time!</h1>}
 
 
-                            <div className="Quiz-ResultSub">{score} out of {questions.length} correct</div>
+                            <div className="Quiz-ResultSub">
+                                {score} out of {questions.length} correct
+                            </div>
+
+                            <p className="mt-3"> {submissionSaved? "Your result has been saved.": "Saving your result..."}</p>
+                                                        
                             <button className="Quiz-PrimaryButton" onClick={HandleRestart}>
                                 Try another module
                             </button>
