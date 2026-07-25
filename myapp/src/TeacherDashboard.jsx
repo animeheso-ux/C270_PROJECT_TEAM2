@@ -117,7 +117,7 @@ useEffect(() => {
                   ) : (
                     quizzes.map((quiz) => (
                       <tr key={quiz.module_id}>
-                        <td className="fw-bold text-white">{quiz.module_name}</td>
+                        <td className="fw-bold text-black">{quiz.module_name}</td>
                         <td>{quiz.question_count} Questions</td>
                         <td>{quiz.submission_count} Submissions</td>
                         <td>

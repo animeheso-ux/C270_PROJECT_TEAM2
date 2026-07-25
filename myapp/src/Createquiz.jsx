@@ -1,5 +1,6 @@
 import { useState } from "react"
 import "./Createquiz.css"
+import './Navbar.css';
 
 function BookIcon() {
     return (
@@ -130,32 +131,59 @@ function CreateQuizPage({ToTeacher}) {
 
 
 
-    async function CreateQuiz(e) {
-        e.preventDefault();
+async function CreateQuiz(e) {
+    e.preventDefault();
 
-        const TopicValue = document.getElementById("Topic")?.value
+    const TopicValue = document.getElementById("Topic")?.value;
+    const Token = localStorage.getItem("Token");
 
-        for (let i = 0; i < Questions.length; i++) {
-            const q = Questions[i]
-            if (!q.Question || !q.Options[1] || !q.Options[2] || !q.Options[3] || !q.Answer) {
-                alert(`Question ${i + 1} is missing a field, or has no correct answer selected.`)
-                return
-            }
-        }
+    if (!Token) {
+        alert("Token not found. Please login again.");
+        return;
+    }
 
-        const response = await fetch("/CreateQuiz",{
-            method : "POST",
-            headers : {"Content-Type" : "application/json"},
-            body : JSON.stringify({Quiz : Questions,Topic : TopicValue})
-        })
+    for (let i = 0; i < Questions.length; i++) {
+        const q = Questions[i];
 
-        const data = await response.json()
-
-        alert(data.status)
-        if (data.status == "success") {
-                        ToTeacher()
+        if (
+            !q.Question ||
+            !q.Options[1] ||
+            !q.Options[2] ||
+            !q.Options[3] ||
+            !q.Answer
+        ) {
+            alert(
+                `Question ${i + 1} is missing a field, or has no correct answer selected.`
+            );
+            return;
         }
     }
+
+    try {
+        const response = await fetch("/CreateQuiz", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${Token}`
+            },
+            body: JSON.stringify({
+                Quiz: Questions,
+                Topic: TopicValue
+            })
+        });
+
+        const data = await response.json();
+
+        alert(data.message || data.status);
+
+        if (response.ok && data.status === "success") {
+            ToTeacher();
+        }
+    } catch (error) {
+        console.error("Create quiz error:", error);
+        alert("Unable to create quiz. Please try again.");
+    }
+}
 
     const LoadQuestions = Questions.map((question,index)=> {
         return (

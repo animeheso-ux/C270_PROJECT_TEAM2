@@ -59,7 +59,12 @@ export default defineConfig({
             "/AdminQuizAnalytics": {
                 target: "http://localhost:3000",
                 changeOrigin: true
-            }
+            },
+            
+            "/StudentDashboardData": {
+              target: "http://localhost:3000",
+              changeOrigin: true
+          }
         }
     }
 });

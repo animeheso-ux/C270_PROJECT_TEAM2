@@ -1,216 +1,295 @@
-import { useEffect,useState } from "react"
-import "./LoginSign.css"
-import {BookOpen,Brain,Trophy,BarChart3} from "lucide-react"
+import { useEffect, useState } from "react";
+import "./LoginSign.css";
 
+import {BookOpen,Brain,Trophy,BarChart3,} from "lucide-react";
 
-function LoginPage({ToQuizPage,ToSignup,ToTeacher,ToAdmin}) {
-    const [username, setUsername] = useState("")
-    const[showPassword,setShowPassword] = useState(false)
-    const [password, setPassword] = useState("")   
-    const [errors, setErrors] = useState({})
-
+function LoginPage({ToQuizPage,ToSignup,ToTeacher,ToAdmin,ToForgotPassword,}) {
+    const [loginIdentifier, setLoginIdentifier] = useState("");
+    const [password, setPassword] =useState("");
+    const [showPassword, setShowPassword] =useState(false);
+    const [errors, setErrors] = useState({});
+    const [serverMessage, setServerMessage] =useState("");
+    const [isSubmitting, setIsSubmitting] =useState(false);
     const handleRedirect = (role) => {
-        console.log("THE DETECTED ROLE IS:", role); 
-        if (role === "admin") {
-            ToAdmin();
-        } else if (role === "teacher") {
-            ToTeacher();
-        } else {
-            ToQuizPage(); // Default fallback for student
+        if (role === "admin") {ToAdmin();
+            return;
         }
-    }
+        if (role === "teacher") {ToTeacher();
+            return;
+        }
+        ToQuizPage();
+    };
 
     async function VerifyToken() {
-        const Token = localStorage.getItem("Token")
-
-        if (!Token) {
-            return
+        const token =localStorage.getItem("Token");
+        if (!token) {return;
         }
 
-        const response = await fetch("/GetToken",{
-            headers : {
-                "authorization" : `Bearer ${Token}`,
-                "Content-Type" : "application/json"
+        try {
+            const response = await fetch("/GetToken",
+                {
+                    headers: {
+                        authorization: `Bearer ${token}`,
+                        "Content-Type":"application/json",
+                    },
+                }
+            );
+
+            const data = await response.json();
+
+            if (
+                response.ok &&
+                data.status === "success"
+            ) {
+                handleRedirect(data.Token.role);
+            } else {
+                localStorage.removeItem("Token");
             }
-            
-        })
-
-        const data = await response.json()
-
-
-        if (data.status == "success") {
-            console.log("TOKEN VALID!")
-            console.log(data.Token["role"])
-            handleRedirect(data.Token["role"])
+        } catch (error) {
+            console.error(
+                "Token verification failed:",
+                error
+            );
         }
     }
 
+    async function Login(event) {
+        event.preventDefault();
 
+        const currentErrors = {
+            loginIdentifier: "",
+            password: "",
+        };
 
-        async function Login() {
-            let currentErrors = { username: "", password: "" };
-            let isValid = true;
+        let isValid = true;
 
-            if (!username.trim()) {
-                currentErrors.username = "Username or Email cannot be empty.";
-                isValid = false;
-            }
+        setServerMessage("");
 
-            if (!password) {
-                currentErrors.password = "Password cannot be empty.";
-                isValid = false;
-            } else if (password.length < 8) {
-                currentErrors.password = "Password must be at least 8 characters.";
-                isValid = false;
-            }
+        if (!loginIdentifier.trim()) {
+            currentErrors.loginIdentifier =
+                "Username or email cannot be empty.";
 
-            setErrors(currentErrors);
-            if (!isValid) return;
+            isValid = false;
+        }
 
-            try {
+        setErrors(currentErrors);
+        if (!isValid) {
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+
             const response = await fetch("/Login", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username: username, password: password })
+                headers: {"Content-Type":"application/json",},
+                body: JSON.stringify({loginIdentifier: loginIdentifier.trim().toLowerCase(),password,
+                }),
             });
 
             const data = await response.json();
-            alert(data.message);
-    
-            if (data.message == "success") {
-                localStorage.setItem("Token",data.token)
-                handleRedirect(data.role)
-                            
+
+            if (
+                !response.ok ||
+                data.status !== "success"
+            ) {
+                setServerMessage(
+                    data.message ||
+                        "Unable to log in."
+                );
+
+                return;
             }
+
+            localStorage.setItem(
+                "Token",
+                data.token
+            );
+
+            handleRedirect(data.role);
         } catch (err) {
-            console.error("Login request failed:", err);
-            alert("An error occurred during login.");
+            console.error(
+                "Login request failed:",
+                err
+            );
+
+            setServerMessage(
+                "Unable to connect to the server."
+            );
+        } finally {
+            setIsSubmitting(false);
         }
-    
     }
 
+    useEffect(() => {
+        if (window.location.port !== "3000") {
+            return;
+        }
 
-        useEffect(()=> {
+        VerifyToken();
+    }, []);
 
-            if (location.port != '3000') {return}
-
-            VerifyToken()
-        },[])
-
-
-
-        return (
-            <div className="page-container">
-                <div className="login-wrapper">
-                    <div className="row g-0">
-
-                    {/* Left Panel */}
+    return (
+        <div className="page-container">
+            <div className="login-wrapper">
+                <div className="row g-0">
                     <div className="col-md-6 left-panel d-none d-md-flex flex-column justify-content-center">
                         <h2>Learning Quest</h2>
 
-                        <h1>
-                            Master Your Modules. 
+                        <h1>Master Your Modules.
                             <br />
                             One Quiz At A Time.
                         </h1>
 
-                        <p>Test your knowledge and challenge yourself with our engaging quizzes. 
-                            Sign in to access a world of learning and fun!
+                        <p>
+                            Test your knowledge and
+                            challenge yourself with our
+                            engaging quizzes.
                         </p>
-                        
+
                         <div className="mt-4">
                             <div className="feature-item">
                                 <div className="feature-icon me-3">
-                                    <BookOpen size={22} />
+                                    <BookOpen size={22}/>
                                 </div>
-
                                 <div>
-                                    <h5>Practice Quizzes</h5><small>Revise every module with unlimited practice.</small>
+                                    <h5>
+                                        Practice
+                                        Quizzes
+                                    </h5>
+
+                                    <small>
+                                        Revise every
+                                        module with
+                                        unlimited
+                                        practice.
+                                    </small>
                                 </div>
                             </div>
 
                             <div className="feature-item">
                                 <div className="feature-icon me-3">
-                                    <BarChart3 size={22} />
+                                    <BarChart3 size={22}/>
                                 </div>
+
                                 <div>
-                                    <h5>Track Progress</h5>
-                                    <small>View your scores and improve over time.</small>
+                                    <h5>
+                                        Track Progress
+                                    </h5>
+
+                                    <small>
+                                        View your scores
+                                        and improve over
+                                        time.
+                                    </small>
                                 </div>
                             </div>
 
                             <div className="feature-item">
                                 <div className="feature-icon me-3">
-                                    <Brain size={22} />
+                                    <Brain size={22}/>
                                 </div>
+
                                 <div>
-                                    <h5>Learn Smart</h5>
-                                    <small>Focus on weak topics and master them quickly.</small>
+                                    <h5>
+                                        Learn Smart
+                                    </h5>
+
+                                    <small>
+                                        Focus on weak
+                                        topics and master
+                                        them quickly.
+                                    </small>
                                 </div>
                             </div>
 
                             <div className="feature-item">
                                 <div className="feature-icon me-3">
-                                    <Trophy size={22} />
+                                    <Trophy size={22}/>
                                 </div>
+
                                 <div>
-                                    <h5>Achieve Better Results</h5>
-                                    <small>Build confidence before every exam.</small>
+                                    <h5>
+                                        Achieve Better
+                                        Results
+                                    </h5>
+
+                                    <small>
+                                        Build confidence
+                                        before every
+                                        assessment.
+                                    </small>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-    
+
                     <div className="col-md-6 bg-white login-card">
                         <h1>Welcome back!</h1>
-                        <p className="text-muted mb-4 ">
+                        <p className="text-muted mb-4">
                             Sign in to continue to Learning Quest.
                         </p>
-                        
-                        <form>
 
-                        <div className="mb-3">
-                            <label htmlFor="Username" className="form-label">Username</label>
-                            <input id="Username" type="text" className="form-control" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)}/>
+                        {serverMessage && (
+                            <div
+                                className="alert alert-danger" role="alert">{serverMessage}
+                            </div>
+                        )}
 
-                            {errors.username && <div className="error-message">{errors.username}</div>}
-                        </div>
+                        <form
+                            onSubmit={Login} noValidate>
+                            <div className="mb-3">
+                                <label htmlFor="LoginIdentifier" className="form-label">Username or Email</label>
+                                <input id="loginIdentifier" type="text" className="form-control" placeholder="Enter your usernmae or email" value={loginIdentifier} onChange={(event) =>setLoginIdentifier(event.target.value)}autoComplete="username"/>
 
-                        <div className="mb-3">
-                            <label htmlFor="Password" className="form-label">Password</label>
-                            <div className="input-group">
-                                <input id="Password" type={showPassword ? "text" : "password"} className="form-control" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}/>
-                                <button type="button" className="btn btn-outline-secondary" onClick={() => setShowPassword(!showPassword)}>
-                                    {showPassword ? "Hide" : "Show"}
+                                {errors.email && (
+                                    <div className="error-message">{errors.email}</div>
+                                )}
+                            </div>
+
+                            <div className="mb-3">
+                                <label htmlFor="Password" className="form-label">Password</label>
+
+                                <div className="input-group">
+                                    <input id="Password" type={showPassword? "text": "password"}
+                                        className="form-control" placeholder="Enter your password" value={password}
+                                        onChange={(event) =>setPassword(event.target.value)}autoComplete="current-password"/>
+
+                                    <button
+                                        type="button" className="btn btn-outline-secondary" onClick={() => setShowPassword((current) =>!current)}>
+                                        {showPassword? "Hide": "Show"}
+                                    </button>
+                                </div>
+
+                                {errors.password && (
+                                    <div className="error-message">
+                                        {
+                                            errors.password
+                                        }
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="auth-login-options">
+                                <label className="auth-remember">
+                                    <input type="checkbox" id="rememberMe"/>
+                                    <span>Remember me</span>
+                                </label>
+
+                                <button
+                                    type="button" className="auth-forgot-button" onClick={ToForgotPassword}>Forgot password?
                                 </button>
                             </div>
-                            {errors.password && <div className="error-message">{errors.password}</div>}
-                        </div>
 
-                        
-                        <div className="mb-3">
-                            <div className="form-check">
-                                <input className="form-check-input" type="checkbox" id="rememberMe"/>
-                                <label className="form-check-label" htmlFor="rememberMe">Remember me</label>
-                            </div>
-
-                            <button type="button" className="btn btn-link">Forgot password?</button>                       
-                        </div>
-
-                            <button type="button" className="login-btn w-100" onClick={Login}>Sign in</button>
+                            <button
+                                type="submit" className="login-btn w-100" disabled={ isSubmitting}>{isSubmitting? "Signing in...": "Sign in"}
+                            </button>
                         </form>
 
-                        <div className="text-center my-3 text-muted">or</div>
-
                         <p className="signup-line">
-                            Don't have an account?
-                            <span 
-                                className="signup-link" 
-                                onClick={ToSignup}
-                                >
-                                Create account
-                            </span>
+                            Don't have an account?{" "}
+                            <button type="button" className="signup-link auth-text-button" onClick={ToSignup}> Create account
+                            </button>
                         </p>
                     </div>
                 </div>
@@ -219,5 +298,4 @@ function LoginPage({ToQuizPage,ToSignup,ToTeacher,ToAdmin}) {
     );
 }
 
-
-export default LoginPage
+export default LoginPage;

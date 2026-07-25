@@ -1,169 +1,159 @@
-/* Main Layout Containers */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+/* Teacher dashboard: editorial, structured and academic */
 .teacher-hub-container {
-  min-height: 100vh;
-  padding-top: 3rem;
-  padding-bottom: 3rem;
-  background-color: #0f172a;
-  color: #f8fafc;
-  font-family: sans-serif;
+    --teacher-ink: #101010;
+    --teacher-paper: #f3f2ee;
+    --teacher-card: #ffffff;
+    --teacher-line: #cfcfc9;
+    --teacher-muted: #707070;
+    min-height: 100vh;
+    padding: 48px 0;
+    color: var(--teacher-ink);
+    background:
+        radial-gradient(circle at 90% 8%, rgba(0,0,0,.055), transparent 22%),
+        var(--teacher-paper);
+    font-family: 'Inter', sans-serif;
 }
 
-.quiz-builder-container {
-  display: flex;
-  min-height: 100vh;
-  font-family: sans-serif;
-  background-color: #fdfdfd;
+.teacher-hub-container > header {
+    position: relative;
+    overflow: hidden;
+    padding: 34px 36px ;
+    border: 1px solid #111 ;
+    border-radius: 24px ;
+    color: #111 ;
+    background: #fff ;
+    box-shadow: none ;
 }
 
-/* Sidebar Styling */
-.sidebar-panel {
-  width: 35%;
-  background-color: #090b0e;
-  color: white;
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.teacher-hub-container > header::before {
+    content: "TEACH / 01";
+    position: absolute;
+    top: 22px;
+    right: 28px;
+    color: #b4b4b0;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .14em;
 }
 
-.sidebar-logo {
-  color: #8a929a;
-  font-size: 14px;
-  margin-bottom: 40px;
+.teacher-hub-container > header::after {
+    content: "";
+    position: absolute;
+    right: -25px;
+    bottom: -65px;
+    width: 170px;
+    height: 170px;
+    border: 1px solid #111;
+    border-radius: 50%;
 }
 
-.sidebar-title {
-  font-size: 42px;
-  font-weight: bold;
-  line-height: 1.2;
-  margin-bottom: 20px;
+.teacher-hub-container h1,
+.teacher-hub-container h2,
+.teacher-hub-container h3,
+.teacher-hub-container h4 {
+    color: #111 ;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -.03em;
 }
 
-.sidebar-desc {
-  color: #8a929a;
-  line-height: 1.5;
-  margin-bottom: 40px;
+.teacher-hub-container .text-white { color: #111 ; }
+.teacher-hub-container .text-secondary,
+.teacher-hub-container .text-muted { color: var(--teacher-muted) ; }
+.teacher-hub-container .text-info { color: #111 ; }
+.teacher-hub-container .text-success { color: #444 ; }
+
+.teacher-hub-container .card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--teacher-line) ;
+    border-radius: 22px ;
+    color: #111 ;
+    background: var(--teacher-card) ;
+    box-shadow: none ;
+    transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
 }
 
-/* Sidebar Steps */
-.step-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
+.teacher-hub-container .row .col-md-4 .card {
+    color: #fff ;
+    border-color: #111 ;
+    background: #111 ;
 }
 
-.step-number {
-  background: #191c21;
-  padding: 8px 12px;
-  border-radius: 6px;
-  margin-right: 15px;
-  color: #5660ff;
-  font-weight: bold;
+.teacher-hub-container .row .col-md-4 .card h6,
+.teacher-hub-container .row .col-md-4 .card p,
+.teacher-hub-container .row .col-md-4 .card small {
+    color: #fff ;
 }
 
-.step-text {
-  color: #8a929a;
-  font-size: 13px;
+.teacher-hub-container .card:hover {
+    transform: translateY(-4px);
+    border-color: #111 ;
+    box-shadow: 7px 7px 0 #111 ;
 }
 
-/* Sidebar Buttons */
-.sidebar-logout-btn {
-  background-color: #191c21;
-  border: 1px solid #313742;
-  color: white;
-  padding: 12px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  align-self: flex-start;
-  font-weight: bold;
+.teacher-hub-container .btn-info {
+    border: 1px solid #111 ;
+    border-radius: 10px ;
+    color: #fff ;
+    background: #111 ;
 }
 
-/* Right Core Form Area */
-.form-workspace {
-  width: 65%;
-  padding: 60px;
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  background-color: #ffffff;
+.teacher-hub-container .btn-info:hover {
+    color: #111 ;
+    background: #fff ;
 }
 
-.form-module-input {
-  flex-grow: 1;
-  padding: 15px;
-  font-size: 18px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-weight: bold;
+.teacher-hub-container .table-responsive {
+    border: 1px solid #d3d3ce;
+    border-radius: 14px;
+    overflow: hidden;
 }
 
-.form-add-btn {
-  background-color: #0f172a;
-  color: white;
-  padding: 0 20px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
+.teacher-hub-container .table {
+    --bs-table-bg: #ffffff;
+    --bs-table-hover-bg: #f4f4f1;
+    --bs-table-border-color: #deded9;
+    --bs-table-color: #222;
+    margin: 0;
 }
 
-/* Quiz Question Card */
-.question-card {
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 30px;
-  background-color: #ffffff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+.teacher-hub-container .table thead th {
+    padding: 16px;
+    color: #767676;
+    background: #f7f7f4;
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
 }
 
-.question-label {
-  color: #94a3b8;
-  font-size: 12px;
-  font-weight: bold;
-  margin-bottom: 15px;
+.teacher-hub-container .table td { padding: 17px 16px; }
+.teacher-hub-container .table .text-white { color: #111 ; }
+.teacher-hub-container .badge {
+    border: 1px solid #111;
+    color: #111 ;
+    background: transparent;
 }
 
-.question-input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  margin-bottom: 20px;
+.teacher-hub-container .btn-outline-danger {
+    border-color: #111;
+    color: #111 ;
+}
+.teacher-hub-container .btn-outline-danger:hover {
+    color: #fff ;
+    background: #111 ;
 }
 
-.options-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 15px;
-  margin-bottom: 25px;
-}
+/* Existing create-builder classes kept compatible */
+.quiz-builder-container { display:flex; min-height:100vh; background:#fff; font-family:'Inter',sans-serif; }
+.sidebar-panel { width:35%; padding:40px; color:#fff; background:#0b0b0b; display:flex; flex-direction:column; justify-content:space-between; }
+.form-workspace { width:65%; padding:60px; display:flex; flex-direction:column; gap:25px; background:#fff; }
 
-.option-field {
-  padding: 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-}
-
-/* Option Target Selectors */
-.correct-answer-row {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.correct-answer-label {
-  color: #64748b;
-  font-size: 14px;
-}
-
-.quiz-submit-btn {
-  background-color: #131926;
-  color: white;
-  padding: 18px;
-  border-radius: 8px;
-  border: none;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 10px;
+@media (max-width: 768px) {
+    .teacher-hub-container { padding: 24px 0; }
+    .teacher-hub-container > header { margin-inline: 12px; padding: 26px !important; }
+    .quiz-builder-container { display:block; }
+    .sidebar-panel, .form-workspace { width:100%; }
 }

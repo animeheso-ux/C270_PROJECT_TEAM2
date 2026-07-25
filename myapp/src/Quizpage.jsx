@@ -1,8 +1,7 @@
 import { useEffect , useState } from "react"
 
-
-
 import "./QuizPage.css"
+import './Navbar.css';
 import { useSyncExternalStore } from "react"
 
 
@@ -65,6 +64,24 @@ function QuizPage({ToLogin,ToQuizCreation}) {
   const [activeModuleName, setActiveModuleName] = useState("");
   const [activeModuleId, setActiveModuleId] = useState(null);
   const [submissionSaved, setSubmissionSaved] = useState(false);
+  const [dashboard, setDashboard] = useState({
+    student: {
+        username: ""
+    },
+
+    summary: {
+        quizzes_taken: 0,
+        average_score: 0,
+        highest_score: 0,
+        completed_modules: 0
+    },
+
+    recent_attempts: [],
+    achievements: []
+});
+
+const [dashboardLoading, setDashboardLoading] = useState(true);
+const [dashboardError, setDashboardError] = useState("");
 
     async function GetToken() {
         const Token = localStorage.getItem("Token")
@@ -102,6 +119,74 @@ function QuizPage({ToLogin,ToQuizCreation}) {
 
         SetTopics(data.result)
     }
+
+    async function LoadStudentDashboard() {
+    try {
+        setDashboardLoading(true);
+        setDashboardError("");
+
+        const token =
+            localStorage.getItem("Token");
+
+        if (!token) {
+            ToLogin();
+            return;
+        }
+
+        const response = await fetch(
+            "/StudentDashboardData",
+            {
+                headers: {
+                    authorization:
+                        `Bearer ${token}`,
+
+                    "Content-Type":
+                        "application/json"
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (
+            !response.ok ||
+            data.status !== "success"
+        ) {
+            throw new Error(
+                data.message ||
+                "Unable to load dashboard."
+            );
+        }
+
+        setDashboard({
+            student: data.student || {
+                username: ""
+            },
+
+            summary: data.summary || {
+                quizzes_taken: 0,
+                average_score: 0,
+                highest_score: 0,
+                completed_modules: 0
+            },
+
+            recent_attempts:
+                data.recent_attempts || [],
+
+            achievements:
+                data.achievements || []
+        });
+    } catch (error) {
+        console.error(
+            "Student dashboard error:",
+            error
+        );
+
+        setDashboardError(error.message);
+    } finally {
+        setDashboardLoading(false);
+    }
+}
 
     async function submitQuizAttempt(
     moduleId,
@@ -219,8 +304,11 @@ function QuizPage({ToLogin,ToQuizCreation}) {
                     score,
                     questions.length
                 );
-
+                setSubmissionSaved(true);
                 setFinished(true);
+
+                await LoadStudentDashboard();
+                
             } catch (error) {
                 alert(
                     error.message ||
@@ -246,6 +334,7 @@ function QuizPage({ToLogin,ToQuizCreation}) {
 
     useEffect(()=> {
         GetTopics()
+        LoadStudentDashboard();
     },[])
 
     useEffect(()=> {
@@ -341,23 +430,244 @@ function QuizPage({ToLogin,ToQuizCreation}) {
 
                 {OnTopicScreen && (
                     <div className="Quiz-RightInner">
-                        <div className="Quiz-RightHeading">Welcome back!</div>
-                        <p className="Quiz-RightSubheading">Choose a module to start your quiz.</p>
+                        <div className="Student-DashboardHeader">
+                        <div>
+                            <div className="Quiz-RightHeading">
+                                Welcome back
+                                {dashboard.student.username
+                                    ? `, ${dashboard.student.username}`
+                                    : ""}
+                                !
+                            </div>
 
-                        <div className="Quiz-TopicGrid">
-                            {Topics.map((topic)=> {
-                                return (
-                                    <button key={topic.module_id} className="Quiz-TopicCard" onClick={()=> {HandleTopicClick(topic.module_id,topic.module_name)}}>
-                                        <div>
-                                            <div className="Quiz-TopicName">{topic.module_name}</div>
-                                            {topic.description && <div className="Quiz-TopicDesc">{topic.description}</div>}
-                                        </div>
-                                        <ArrowIcon/>
-                                    </button>
-                                )
-                            })}
+                            <p className="Quiz-RightSubheading">
+                                Review your learning progress and
+                                choose your next quiz.
+                            </p>
                         </div>
                     </div>
+
+                    {dashboardLoading && (
+                        <div className="Student-DashboardMessage">
+                            Loading your progress...
+                        </div>
+                    )}
+
+                    {dashboardError && (
+                        <div className="Student-DashboardError">
+                            {dashboardError}
+                        </div>
+                    )}
+
+                    {!dashboardLoading && (
+                        <>
+                            <div className="Student-StatsGrid">
+
+                                <div className="Student-StatCard">
+                                    <span className="Student-StatLabel">
+                                        Quizzes Taken
+                                    </span>
+
+                                    <strong className="Student-StatValue">
+                                        {
+                                            dashboard.summary
+                                                .quizzes_taken
+                                        }
+                                    </strong>
+                                </div>
+
+                                <div className="Student-StatCard">
+                                    <span className="Student-StatLabel">
+                                        Average Score
+                                    </span>
+
+                                    <strong className="Student-StatValue">
+                                        {
+                                            dashboard.summary
+                                                .average_score
+                                        }%
+                                    </strong>
+                                </div>
+
+                                <div className="Student-StatCard">
+                                    <span className="Student-StatLabel">
+                                        Highest Score
+                                    </span>
+
+                                    <strong className="Student-StatValue">
+                                        {
+                                            dashboard.summary
+                                                .highest_score
+                                        }%
+                                    </strong>
+                                </div>
+
+                                <div className="Student-StatCard">
+                                    <span className="Student-StatLabel">
+                                        Modules Completed
+                                    </span>
+
+                                    <strong className="Student-StatValue">
+                                        {
+                                            dashboard.summary
+                                                .completed_modules
+                                        }
+                                    </strong>
+                                </div>
+
+                            </div>
+
+                            <section className="Student-DashboardSection">
+                                <div className="Student-SectionHeader">
+                                    <div>
+                                        <h2>Recent Attempts</h2>
+                                        <p>
+                                            Your five most recent
+                                            quiz results.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {dashboard.recent_attempts.length === 0 ? (
+                                    <div className="Student-EmptyState">
+                                        You have not completed a quiz yet.
+                                        Choose a module below to begin.
+                                    </div>
+                                ) : (
+                                    <div className="Student-AttemptList">
+                                        {dashboard.recent_attempts.map(
+                                            (attempt) => (
+                                                <div
+                                                    className="Student-AttemptRow"
+                                                    key={attempt.attempt_id}
+                                                >
+                                                    <div>
+                                                        <div className="Student-AttemptName">
+                                                            {attempt.module_name}
+                                                        </div>
+
+                                                        <div className="Student-AttemptScore">
+                                                            {attempt.score} out of{" "}
+                                                            {attempt.total_questions}
+                                                            {" "}correct
+                                                        </div>
+                                                    </div>
+
+                                                    <span
+                                                        className={
+                                                            Number(
+                                                                attempt.percentage
+                                                            ) >= 50
+                                                                ? "Student-ResultBadge is-pass"
+                                                                : "Student-ResultBadge is-fail"
+                                                        }
+                                                    >
+                                                        {attempt.percentage}%
+                                                    </span>
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+                                )}
+                            </section>
+
+                            <section className="Student-DashboardSection">
+                                <div className="Student-SectionHeader">
+                                    <div>
+                                        <h2>Achievements</h2>
+                                        <p>
+                                            Milestones earned from your
+                                            quiz performance.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {dashboard.achievements.length === 0 ? (
+                                    <div className="Student-EmptyState">
+                                        Complete quizzes to unlock
+                                        achievements.
+                                    </div>
+                                ) : (
+                                    <div className="Student-AchievementGrid">
+                                        {dashboard.achievements.map(
+                                            (achievement) => (
+                                                <div
+                                                    className="Student-AchievementCard"
+                                                    key={achievement.name}
+                                                >
+                                                    <div className="Student-AchievementIcon">
+                                                        {achievement.icon}
+                                                    </div>
+
+                                                    <div>
+                                                        <div className="Student-AchievementName">
+                                                            {achievement.name}
+                                                        </div>
+
+                                                        <div className="Student-AchievementDescription">
+                                                            {
+                                                                achievement.description
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+                                )}
+                            </section>
+                        </>
+                    )}
+
+                    <section className="Student-DashboardSection">
+                        <div className="Student-SectionHeader">
+                            <div>
+                                <h2>Available Modules</h2>
+                                <p>
+                                    Select a module to begin a quiz.
+                                </p>
+                            </div>
+
+                            <span className="Student-ModuleCount">
+                                {Topics.length} available
+                            </span>
+                        </div>
+
+                        {Topics.length === 0 ? (
+                            <div className="Student-EmptyState">
+                                No quiz modules are currently available.
+                            </div>
+                        ) : (
+                            <div className="Quiz-TopicGrid">
+                                {Topics.map((topic) => (
+                                    <button
+                                        key={topic.module_id}
+                                        className="Quiz-TopicCard"
+                                        onClick={() => {
+                                            HandleTopicClick(
+                                                topic.module_id,
+                                                topic.module_name
+                                            );
+                                        }}
+                                    >
+                                        <div>
+                                            <div className="Quiz-TopicName">
+                                                {topic.module_name}
+                                            </div>
+
+                                            {topic.description && (
+                                                <div className="Quiz-TopicDesc">
+                                                    {topic.description}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </section>
+
+                </div>
                 )}
 
                 {OnQuizScreen && questions[currentIndex] && (

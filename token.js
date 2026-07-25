@@ -36,5 +36,7 @@ TokenRouter.get("/GetToken",VerifyToken,(req,res)=> {
 
 
 module.exports = {
-    TokenRouter
+    TokenRouter,
+    VerifyToken
+
 }

@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
+import './AdminDashboard.css';
+import './Navbar.css';
+
 
 // Safe props fallback implementation remains intact
 function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.location.reload(); } }) {
