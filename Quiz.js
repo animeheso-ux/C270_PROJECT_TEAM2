@@ -40,10 +40,10 @@ QuizRouter.post("/CreateQuiz", VerifyToken, async (req, res) => {
 
         const [moduleResult] = await database.promise().query(
             `
-            INSERT INTO modules (module_name, description)
-            VALUES (?, ?)
+            INSERT INTO modules (module_name, description,teacher_id)
+            VALUES (?, ?,?)
             `,
-            [Topic, "A quiz"]
+            [Topic, "A quiz", req.Token.id]
         );
 
         const moduleId = moduleResult.insertId;
@@ -297,14 +297,12 @@ QuizRouter.post("/SubmitQuiz", VerifyToken, async (req, res) => {
 /*
 |--------------------------------------------------------------------------
 | Teacher Dashboard Data
-|--------------------------------------------------------------------------
-| Since your modules table currently has no teacher_id,
-| all teachers will see all modules.
-*/
+|--------------------------------------------------------------------------*/
 QuizRouter.get(
     "/TeacherDashboardData",
     VerifyToken,
     async (req, res) => {
+
         if (
             req.Token.role !== "teacher" &&
             req.Token.role !== "admin"
@@ -316,48 +314,95 @@ QuizRouter.get(
         }
 
         try {
-            const [results] = await database.promise().query(
-                `
-                SELECT
-                    m.module_id,
-                    m.module_name,
-                    m.description,
+            let sql;
+            let values = [];
 
-                    COUNT(
-                        DISTINCT q.question_id
-                    ) AS question_count,
+            if (req.Token.role === "admin") {
+                sql = `
+                    SELECT
+                        m.module_id,
+                        m.module_name,
+                        m.description,
+                        m.teacher_id,
 
-                    COUNT(
-                        DISTINCT qa.attempt_id
-                    ) AS submission_count
+                        COUNT(
+                            DISTINCT q.question_id
+                        ) AS question_count,
 
-                FROM modules m
+                        COUNT(
+                            DISTINCT qa.attempt_id
+                        ) AS submission_count
 
-                LEFT JOIN questions q
-                    ON q.module_id = m.module_id
+                    FROM modules m
 
-                LEFT JOIN quiz_attempts qa
-                    ON qa.module_id = m.module_id
+                    LEFT JOIN questions q
+                        ON q.module_id = m.module_id
 
-                GROUP BY
-                    m.module_id,
-                    m.module_name,
-                    m.description
+                    LEFT JOIN quiz_attempts qa
+                        ON qa.module_id = m.module_id
 
-                ORDER BY m.module_id DESC
-                `
-            );
+                    GROUP BY
+                        m.module_id,
+                        m.module_name,
+                        m.description,
+                        m.teacher_id
+
+                    ORDER BY m.module_id DESC
+                `;
+            } else {
+                sql = `
+                    SELECT
+                        m.module_id,
+                        m.module_name,
+                        m.description,
+                        m.teacher_id,
+
+                        COUNT(
+                            DISTINCT q.question_id
+                        ) AS question_count,
+
+                        COUNT(
+                            DISTINCT qa.attempt_id
+                        ) AS submission_count
+
+                    FROM modules m
+
+                    LEFT JOIN questions q
+                        ON q.module_id = m.module_id
+
+                    LEFT JOIN quiz_attempts qa
+                        ON qa.module_id = m.module_id
+
+                    WHERE m.teacher_id = ?
+
+                    GROUP BY
+                        m.module_id,
+                        m.module_name,
+                        m.description,
+                        m.teacher_id
+
+                    ORDER BY m.module_id DESC
+                `;
+
+                values = [req.Token.id];
+            }
+
+            const [results] =
+                await database.promise().query(sql,values);
 
             return res.json({
                 status: "success",
                 result: results
             });
+
         } catch (err) {
-            console.error("Teacher dashboard error:", err);
+            console.error(
+                "Teacher dashboard error:",err
+            );
 
             return res.status(500).json({
                 status: "error",
-                message: "Unable to load teacher dashboard.",
+                message:"Unable to load teacher dashboard.",
                 result: []
             });
         }
@@ -369,10 +414,7 @@ QuizRouter.get(
 | Admin Quiz Analytics
 |--------------------------------------------------------------------------
 */
-QuizRouter.get(
-    "/AdminQuizAnalytics",
-    VerifyToken,
-    async (req, res) => {
+QuizRouter.get("/AdminQuizAnalytics",VerifyToken,async (req, res) => {
         if (req.Token.role !== "admin") {
             return res.status(403).json({
                 status: "error",
@@ -444,10 +486,7 @@ QuizRouter.get(
 | Student Dashboard Data
 |--------------------------------------------------------------------------
 */
-QuizRouter.get(
-    "/StudentDashboardData",
-    VerifyToken,
-    async (req, res) => {
+QuizRouter.get("/StudentDashboardData",VerifyToken,async (req, res) => {
         if (req.Token.role !== "student") {
             return res.status(403).json({
                 status: "error",
@@ -579,6 +618,104 @@ QuizRouter.get(
                 status: "error",
                 message:
                     "Unable to load student dashboard."
+            });
+        }
+    }
+);
+
+/*
+|--------------------------------------------------------------------------
+| Delete Quiz Module
+|--------------------------------------------------------------------------
+*/
+
+QuizRouter.delete("/DeleteQuiz/:id", VerifyToken, async (req, res) => {
+
+    if (
+        req.Token.role !== "teacher" &&
+        req.Token.role !== "admin"
+    ) {
+        return res.status(403).json({
+            status: "error",
+            message: "Teacher access is required."
+        });
+    }
+
+    const moduleId = req.params.id;
+
+    try {
+
+        await database.promise().beginTransaction();
+
+        // Delete all options
+        await database.promise().query(
+            `
+            DELETE o
+            FROM options o
+            INNER JOIN questions q
+                ON o.question_id = q.question_id
+            WHERE q.module_id = ?
+            `,
+            [moduleId]
+        );
+
+        // Delete questions
+        await database.promise().query(
+            `
+            DELETE
+            FROM questions
+            WHERE module_id = ?
+            `,
+            [moduleId]
+        );
+
+        // Delete quiz attempts
+        await database.promise().query(
+            `
+            DELETE
+            FROM quiz_attempts
+            WHERE module_id = ?
+            `,
+            [moduleId]
+        );
+
+        // Delete module
+        const [result] = await database.promise().query(
+            `
+            DELETE
+            FROM modules
+            WHERE module_id = ?
+            `,
+            [moduleId]
+        );
+
+        if (result.affectedRows === 0) {
+
+            await database.promise().rollback();
+
+            return res.status(404).json({
+                status: "error",
+                message: "Module not found."
+            });
+
+        }
+
+        await database.promise().commit();
+
+        return res.json({
+            status: "success",
+            message: "Quiz module deleted successfully."
+        });
+
+    } catch (err) {
+
+        await database.promise().rollback();
+
+        console.error("DELETE QUIZ ERROR:", err);
+
+        return res.status(500).json({
+            status: "error",
+            message: "Unable to delete quiz module."
             });
         }
     }

@@ -1,4 +1,5 @@
 const express = require("express")
+const cors = require("cors");
 const {exec} = require("node:child_process")
 
 const http = require("http")
@@ -14,6 +15,13 @@ const PORT = 3000
 
 const server = http.createServer(app)
 
+app.use(
+    cors({
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+    })
+);
 
 
 app.use(express.json())

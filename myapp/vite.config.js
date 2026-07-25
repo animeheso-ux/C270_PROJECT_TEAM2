@@ -56,6 +56,11 @@ export default defineConfig({
                 changeOrigin: true
             },
 
+            "/DeleteQuiz": {
+                target: "http://localhost:3000",
+                changeOrigin: true
+            },
+
             "/AdminQuizAnalytics": {
                 target: "http://localhost:3000",
                 changeOrigin: true

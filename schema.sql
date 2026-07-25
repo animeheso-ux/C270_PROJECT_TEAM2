@@ -40,3 +40,29 @@ CREATE TABLE options (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
+
+CREATE TABLE quiz_attempts (
+    attempt_id INT AUTO_INCREMENT PRIMARY KEY,
+
+    student_id INT NOT NULL,
+
+    module_id INT NOT NULL,
+
+    score INT NOT NULL,
+
+    total_questions INT NOT NULL,
+
+    percentage DECIMAL(5,2) NOT NULL,
+
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_attempt_student
+        FOREIGN KEY (student_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_attempt_module
+        FOREIGN KEY (module_id)
+        REFERENCES modules(module_id)
+        ON DELETE CASCADE
+);

@@ -368,7 +368,9 @@ DatabaseRouter.post("/Login", (req, res) => {
 });
 
 DatabaseRouter.post("/ForgotPassword",(req, res) => {
-        const email =req.body.email?.trim().toLowerCase();
+        console.log("FORGOT PASSWORD ROUTE HIT");
+
+        const email =req.body.email?.trim().toLowerCase()
 
         if (!email) {
             return res.status(400).json({
@@ -569,6 +571,47 @@ DatabaseRouter.post("/ResetPassword", async (req, res) => {
         });
     }
 });
+
+DatabaseRouter.delete("/DeleteQuiz/:id",(req, res) => {
+        const quizId = req.params.id;
+        const sql ="DELETE FROM modules WHERE module_id = ?";
+
+        database.query(
+            sql,
+            [quizId],
+            (error, result) => {
+                if (error) {
+                    console.error(
+                        "DELETE QUIZ ERROR:",
+                        error
+                    );
+
+                    return res.status(500).json({
+                        status: "error",
+                        message:
+                            "Unable to delete the quiz.",
+                    });
+                }
+
+                if (
+                    result.affectedRows === 0
+                ) {
+                    return res.status(404).json({
+                        status: "error",
+                        message:
+                            "Quiz not found.",
+                    });
+                }
+
+                return res.json({
+                    status: "success",
+                    message:
+                        "Quiz deleted successfully.",
+                });
+            }
+        );
+    }
+);
 
 
 module.exports = {
