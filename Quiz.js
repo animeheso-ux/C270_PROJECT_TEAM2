@@ -298,10 +298,7 @@ QuizRouter.post("/SubmitQuiz", VerifyToken, async (req, res) => {
 |--------------------------------------------------------------------------
 | Teacher Dashboard Data
 |--------------------------------------------------------------------------*/
-QuizRouter.get(
-    "/TeacherDashboardData",
-    VerifyToken,
-    async (req, res) => {
+QuizRouter.get("/TeacherDashboardData",VerifyToken,async (req, res) => {
 
         if (
             req.Token.role !== "teacher" &&

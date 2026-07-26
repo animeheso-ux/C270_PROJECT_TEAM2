@@ -160,12 +160,7 @@ DatabaseRouter.post("/CreateAccount",async (req, res) => {
 
                     database.query(
                         insertSql,
-                        [
-                            username,
-                            email,
-                            hashedPassword,
-                            userRole,
-                        ],
+                        [username,email,hashedPassword,userRole,],
                         async (insertError) => {
                             if (insertError) {console.error("ACCOUNT INSERT ERROR:",insertError);
 
@@ -414,14 +409,10 @@ DatabaseRouter.post("/ForgotPassword",(req, res) => {
                 const user = results[0];
 
                 const resetCode =
-                    crypto.randomInt(
-                        100000,
-                        1000000
-                    ).toString();
+                    crypto.randomInt(100000,1000000).toString();
 
                 const expiresAt =
-                    Date.now() +
-                    10 * 60 * 1000;
+                    Date.now() + 10 * 60 * 1000;
 
                 passwordResetCodes.set(
                     email,
