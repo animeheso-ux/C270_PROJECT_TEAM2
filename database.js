@@ -51,6 +51,88 @@ database.connect((err) => {
     console.log("MYSQL CONNECTED!");
 });
 
+function createAuditLog({
+    userId = null,
+    username = null,
+    email = null,
+    role = null,
+    action,
+    description,
+    status,
+    ipAddress = null,
+}) {
+    const auditSql = `
+        INSERT INTO audit_logs
+        (
+            user_id,
+            username,
+            email,
+            role,
+            action,
+            description,
+            status,
+            ip_address
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const auditValues = [
+        userId,
+        username,
+        email,
+        role,
+        action,
+        description,
+        status,
+        ipAddress,
+    ];
+
+    database.query(
+        auditSql,
+        auditValues,
+        (auditError) => {
+            if (auditError) {
+                console.error(
+                    "AUDIT LOG INSERT ERROR:",
+                    auditError
+                );
+            }
+        }
+    );
+}
+
+function VerifyToken(req, res, next) {
+    const authorizationHeader = req.headers.authorization;
+
+    if (
+        !authorizationHeader ||
+        !authorizationHeader.startsWith("Bearer ")
+    ) {
+        return res.status(401).json({
+            status: "error",
+            message: "Authentication token is required.",
+        });
+    }
+
+    const token = authorizationHeader.split(" ")[1];
+
+    try {
+        const decodedToken = jsonwebtoken.verify(
+            token,
+            process.env.JWT_SECRET || "YOUR_SECRET_KEY"
+        );
+
+        req.Token = decodedToken;
+
+        next();
+    } catch (error) {
+        return res.status(401).json({
+            status: "error",
+            message: "Invalid or expired authentication token.",
+        });
+    }
+}
+
 
 DatabaseRouter.get("/GetUsers", (req, res) => {
     database.query(
@@ -309,6 +391,20 @@ DatabaseRouter.post("/Login", (req, res) => {
             }
 
             if (results.length === 0) {
+                createAuditLog({
+                    userId: null,
+                    username: loginIdentifier,
+                    email: loginIdentifier.includes("@")
+                        ? normalizedEmail
+                        : null,
+                    role: null,
+                    action: "LOGIN_FAILURE",
+                    description:
+                        "Login attempt made using an unknown username or email.",
+                    status: "FAILURE",
+                    ipAddress: req.ip,
+                });
+
                 return res.status(401).json({
                     status: "error",
                     message:
@@ -323,6 +419,18 @@ DatabaseRouter.post("/Login", (req, res) => {
                     await bcrypt.compare(password,user.password);
 
                 if (!validPassword) {
+                    createAuditLog({
+                        userId: user.id,
+                        username: user.username,
+                        email: user.email,
+                        role: user.role,
+                        action: "LOGIN_FAILURE",
+                        description:
+                            `Incorrect password entered for ${user.username}.`,
+                        status: "FAILURE",
+                        ipAddress: req.ip,
+                    });
+
                     return res.status(401).json({
                         status: "error",
                         message:
@@ -337,6 +445,18 @@ DatabaseRouter.post("/Login", (req, res) => {
                             expiresIn: "1h",
                         }
                     );
+
+                createAuditLog({
+                    userId: user.id,
+                    username: user.username,
+                    email: user.email,
+                    role: user.role,
+                    action: "LOGIN_SUCCESS",
+                    description:
+                        `${user.username} logged in successfully.`,
+                    status: "SUCCESS",
+                    ipAddress: req.ip,
+                });
 
                 return res.json({
                     status: "success",
@@ -399,11 +519,22 @@ DatabaseRouter.post("/ForgotPassword",(req, res) => {
                 }
 
                 if (results.length === 0) {
+                    createAuditLog({
+                        userId: null,
+                        username: null,
+                        email,
+                        role: null,
+                        action: "PASSWORD_RESET_FAILURE",
+                        description:
+                            "Password reset requested for an unregistered email address.",
+                        status: "FAILURE",
+                        ipAddress: req.ip,
+                    });
+
                     return res.status(404).json({
-                            status: "error",
-                            message:
-                                "No account was found with this email.",
-                        });
+                        status: "error",
+                        message: "No account was found with this email.",
+                    });
                 }
 
                 const user = results[0];
@@ -447,6 +578,18 @@ DatabaseRouter.post("/ForgotPassword",(req, res) => {
                             `,
                         }
                     );
+
+                    createAuditLog({
+                        userId: user.id,
+                        username: user.username,
+                        email: user.email,
+                        role: null,
+                        action: "PASSWORD_RESET_REQUEST",
+                        description: `${user.username} requested a password reset code.`,
+                        status: "SUCCESS",
+                        ipAddress: req.ip,
+                    });
+
 
                     return res.json({
                         status: "success",
@@ -504,19 +647,43 @@ DatabaseRouter.post("/ResetPassword", async (req, res) => {
     if (Date.now() > savedResetRequest.expiresAt) {
         passwordResetCodes.delete(email);
 
-        return res.status(400).json({
-            status: "error",
-            message:
-                "The password reset code has expired. Request a new code.",
-        });
-    }
+        createAuditLog({
+        userId: null,
+        username: null,
+        email,
+        role: null,
+        action: "PASSWORD_RESET_FAILURE",
+        description:
+            "An expired password reset code was used.",
+        status: "FAILURE",
+        ipAddress: req.ip,
+    });
+
+    return res.status(400).json({
+        status: "error",
+        message:
+            "The password reset code has expired. Request a new code.",
+    });
+}
 
     if (savedResetRequest.code !== resetCode) {
-        return res.status(400).json({
-            status: "error",
-            message: "The password reset code is incorrect.",
-        });
-    }
+        createAuditLog({
+        userId: null,
+        username: null,
+        email,
+        role: null,
+        action: "PASSWORD_RESET_FAILURE",
+        description:
+            "An incorrect password reset code was entered.",
+        status: "FAILURE",
+        ipAddress: req.ip,
+    });
+
+    return res.status(400).json({
+        status: "error",
+        message: "The password reset code is incorrect.",
+    });
+}
 
     try {
         const hashedPassword = await bcrypt.hash(newPassword,SALT_ROUNDS);
@@ -545,6 +712,18 @@ DatabaseRouter.post("/ResetPassword", async (req, res) => {
                 }
 
                 passwordResetCodes.delete(email);
+                
+                createAuditLog({
+                    userId: null,
+                    username: null,
+                    email,
+                    role: null,
+                    action: "PASSWORD_RESET_SUCCESS",
+                    description:
+                        "Password was changed successfully through account recovery.",
+                    status: "SUCCESS",
+                    ipAddress: req.ip,
+                });
 
                 return res.json({
                     status: "success",
@@ -604,6 +783,67 @@ DatabaseRouter.delete("/DeleteQuiz/:id",(req, res) => {
     }
 );
 
+DatabaseRouter.get(
+    "/AuditLogs",
+    VerifyToken,
+    (req, res) => {
+        if (req.Token.role !== "admin") {
+            createAuditLog({
+                userId: req.Token.id,
+                username: req.Token.username,
+                email: req.Token.email,
+                role: req.Token.role,
+                action: "UNAUTHORIZED_ACCESS",
+                description:
+                    `${req.Token.username} attempted to access the admin audit logs.`,
+                status: "DENIED",
+                ipAddress: req.ip,
+            });
+
+            return res.status(403).json({
+                status: "error",
+                message:
+                    "Administrator access is required.",
+            });
+        }
+
+        const sql = `
+            SELECT
+                id,
+                user_id,
+                username,
+                email,
+                role,
+                action,
+                description,
+                status,
+                ip_address,
+                created_at
+            FROM audit_logs
+            ORDER BY created_at DESC
+        `;
+
+        database.query(sql, (error, results) => {
+            if (error) {
+                console.error(
+                    "GET AUDIT LOGS ERROR:",
+                    error
+                );
+
+                return res.status(500).json({
+                    status: "error",
+                    message:
+                        "Unable to retrieve audit logs.",
+                });
+            }
+
+            return res.json({
+                status: "success",
+                result: results,
+            });
+        });
+    }
+);
 
 module.exports = {
     DatabaseRouter,
