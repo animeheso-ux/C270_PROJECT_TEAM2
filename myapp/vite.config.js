@@ -69,7 +69,12 @@ export default defineConfig({
             "/StudentDashboardData": {
               target: "http://localhost:3000",
               changeOrigin: true
-          }
+            },
+
+            "/AuditLogs": {
+              target: "http://localhost:3000",
+              changeOrigin: true
+            },
         }
     }
 });

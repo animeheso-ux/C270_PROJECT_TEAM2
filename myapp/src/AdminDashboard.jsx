@@ -4,15 +4,17 @@ import './AdminDashboard.css';
 import './Navbar.css';
 
 
-// Safe props fallback implementation remains intact
 function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.location.reload(); } }) {
-  // Added local states to handle panel toggling
   const [showUsers, setShowUsers] = useState(false);
   const [showLogs, setShowLogs] = useState(false);
   const [users, SetUsers] = useState([])
   const [quizAnalytics, setQuizAnalytics] = useState([]);
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
   const [analyticsError, setAnalyticsError] = useState("");
+  const [showAuditLogs, setShowAuditLogs] = useState(false);
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [auditLoading, setAuditLoading] = useState(false);
+  const [auditError, setAuditError] = useState("");
 
   async function GetUsers() {
     try{
@@ -23,16 +25,14 @@ function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.
       if (data && data.result) {
         SetUsers(data.result);
       } else {
-        // Fallback if data structure is missing the result key
         throw new Error("No database result data found");
       }
     } catch (error) {
       console.warn("Database fetch failed. Using mock platformUsers fallback data instead.");
       
-      // Map 'name' from the mock data to 'username' so it works seamlessly with your table layout
       const formattedMockUsers = platformUsers.map(u => ({
         id: u.id,
-        username: u.name, // maps 'name' to 'username'
+        username: u.username, 
         email: u.email,
         role: u.role
       }));
@@ -75,10 +75,40 @@ function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.
     }
 }
 
+  async function GetAuditLogs() {
+    try {
+        setAuditLoading(true);
+        setAuditError("");
+
+        const token = localStorage.getItem("Token");
+
+        const response = await fetch("/AuditLogs", {
+            headers: {
+                authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.status !== "success") {
+            throw new Error(
+                data.message || "Unable to load audit logs."
+            );
+        }
+
+        setAuditLogs(data.result || []);
+    } catch (error) {
+        console.error("AUDIT LOG FETCH ERROR:", error);
+        setAuditError(error.message);
+    } finally {
+        setAuditLoading(false);
+    }
+}
+
   return (
     <div className="min-vh-100 py-5" style={{ backgroundColor: '#0f172a', color: '#f8fafc', fontFamily: 'sans-serif' }}>
       
-      {/* Header Container */}
       <header className="container bg-dark bg-gradient border border-secondary rounded-3 p-4 mb-4 d-flex justify-content-between align-items-center shadow">
         <div>
           <h1 className="h3 fw-bold mb-1 text-white">Admin Dashboard</h1>
@@ -88,11 +118,9 @@ function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.
         </div>
       </header>
 
-      {/* Grid Layout Container */}
       <div className="container">
         <div className="row g-4">
           
-          {/* Card 1:Manage user */}
           <div className="col-12 col-md-6">
             <div className="card h-100 border border-secondary p-4 shadow-sm" style={{ backgroundColor: '#1e293b', color: '#f8fafc' }}>
               <div className="card-body d-flex flex-column justify-content-between">
@@ -110,7 +138,6 @@ function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.
             </div>
           </div>
 
-          {/* Card 2: Quiz Analytics Tracker*/}
           <div className="col-12 col-md-6">
             <div className="card h-100 border border-secondary p-4 shadow-sm" style={{ backgroundColor: '#1e293b', color: '#f8fafc' }}>
               <div className="card-body d-flex flex-column justify-content-between">
@@ -129,11 +156,34 @@ function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.
               </div>
             </div>
           </div>
+
+          <div className="col-12 col-md-6">
+            <div className="card h-100 border border-secondary p-4 shadow-sm"
+                style={{backgroundColor: "#1e293b",color: "#f8fafc",}}>
+                <div className="card-body d-flex flex-column justify-content-between">
+                    <div>
+                        <h3 className="h4 fw-bold text-white mb-3">Security Audit Logs</h3>
+                        <p className="text-secondary mb-4">Review successful logins, failed login attempts,and other important security events.</p>
+                    </div>
+
+                    <button
+                        className="btn btn-info text-dark fw-bold w-100 mt-auto"
+                        onClick={() => {const nextValue = !showAuditLogs;setShowAuditLogs(nextValue);
+
+                            if (nextValue) {
+                                GetAuditLogs();
+                            }
+                        }}
+                    >
+                        {showAuditLogs
+                            ? "Hide Audit Logs"
+                            : "View Audit Logs"}
+                    </button>
+                </div>
+            </div>
+          </div>
         </div>
           
-        {/* --- INTERACTIVE DYNAMIC RENDER BLOCKS --- */}
-
-        {/* Action Toggle Component A: Access Matrix Data Table */}
         {showUsers && (
           <div className="card border border-secondary p-4 shadow-sm mt-4" style={{ backgroundColor: '#1e293b' }}>
             <h4 className="h5 fw-bold text-info mb-3">System Registry Dashboard</h4>
@@ -164,7 +214,6 @@ function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.
           </div>
         )}
       
-        {/* Action Toggle Component B: Diagnostic Status Terminal */}
         {showLogs && (
           <div className="card border border-secondary p-4 shadow-sm mt-4" style={{ backgroundColor: '#1e293b' }}>
             <h4 className="h5 fw-bold text-info mb-3">Quiz Performance Hub</h4>
@@ -231,7 +280,135 @@ function AdminDashboard({ user, onLogout = () => { localStorage.clear(); window.
             </div>
           </div>
         )}
-      </div>
+
+        {showAuditLogs && (
+          <div
+              className="card border border-secondary p-4 shadow-sm mt-4"
+              style={{ backgroundColor: "#1e293b" }}
+          >
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h4 className="h5 fw-bold text-info mb-0">
+                      Security Audit Logs
+                  </h4>
+
+                  <button
+                      className="btn btn-outline-info btn-sm"
+                      onClick={GetAuditLogs}
+                      disabled={auditLoading}
+                  >
+                      {auditLoading ? "Refreshing..." : "Refresh"}
+                  </button>
+              </div>
+
+              <div className="table-responsive">
+                  <table className="table table-dark table-hover mb-0 border-secondary align-middle">
+                      <thead>
+                          <tr>
+                              <th>Date and Time</th>
+                              <th>User</th>
+                              <th>Role</th>
+                              <th>Action</th>
+                              <th>Description</th>
+                              <th>Status</th>
+                              <th>IP Address</th>
+                          </tr>
+                      </thead>
+
+                      <tbody>
+                          {auditLoading ? (
+                              <tr>
+                                  <td
+                                      colSpan="7"
+                                      className="text-center text-secondary py-4"
+                                  >
+                                      Loading audit logs...
+                                  </td>
+                              </tr>
+                          ) : auditError ? (
+                              <tr>
+                                  <td
+                                      colSpan="7"
+                                      className="text-center text-danger py-4"
+                                  >
+                                      {auditError}
+                                  </td>
+                              </tr>
+                          ) : auditLogs.length === 0 ? (
+                              <tr>
+                                  <td
+                                      colSpan="7"
+                                      className="text-center text-secondary py-4"
+                                  >
+                                      No audit logs are available.
+                                  </td>
+                              </tr>
+                          ) : (
+                              auditLogs.map((log) => (
+                                  <tr key={log.id}>
+                                      <td>
+                                          {new Date(
+                                              log.created_at
+                                          ).toLocaleString()}
+                                      </td>
+
+                                      <td>
+                                          <div className="fw-bold text-white">
+                                              {log.username || "Unknown"}
+                                          </div>
+
+                                          <small className="text-secondary">
+                                              {log.email || "No email"}
+                                          </small>
+                                      </td>
+
+                                      <td>
+                                          <span
+                                              className={`badge ${
+                                                  log.role === "admin"
+                                                      ? "bg-danger"
+                                                      : log.role === "teacher"
+                                                      ? "bg-primary"
+                                                      : log.role === "student"
+                                                      ? "bg-secondary"
+                                                      : "bg-dark"
+                                              }`}
+                                          >
+                                              {log.role || "Unknown"}
+                                          </span>
+                                      </td>
+
+                                      <td className="fw-bold">
+                                          {log.action}
+                                      </td>
+
+                                      <td>{log.description}</td>
+
+                                      <td>
+                                          <span
+                                              className={`badge ${
+                                                  log.status === "SUCCESS"
+                                                      ? "bg-success"
+                                                      : log.status === "FAILURE"
+                                                      ? "bg-danger"
+                                                      : "bg-warning text-dark"
+                                              }`}
+                                          >
+                                              {log.status}
+                                          </span>
+                                      </td>
+
+                                      <td>
+                                          <code>{log.ip_address || "N/A"}</code>
+                                      </td>
+                                  </tr>
+                              ))
+                          )}
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+      )}
+    </div>
     </div>
   );
 }
