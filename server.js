@@ -50,13 +50,7 @@ app.get("/{*path}",(req,res)=> {
 })
 
 
-exec("cd myapp && npm run build" ,(err)=> {
-    if (err) {
-        throw err
-    }
 
-    console.log("REACT BUILD : SUCCESS",`http://localhost:${PORT}`)
-})
 
 
 
