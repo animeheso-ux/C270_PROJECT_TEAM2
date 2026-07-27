@@ -8,7 +8,7 @@ COPY . .
 # Install dependencies
 RUN npm ci
 
-EXPOSE 3000
+EXPOSE 8080
 
 # Start the backend
 CMD ["node", "server.js"]

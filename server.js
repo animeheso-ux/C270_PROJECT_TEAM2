@@ -11,18 +11,20 @@ const { TokenRouter } = require("./token")
 
 
 const app = express()
-const PORT = 3000
+const PORT = process.env.PORT || 3000
 
 const server = http.createServer(app)
 
 app.use(
-    cors({
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-    })
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://c270-project-team2.pages.dev"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
 );
-
 
 app.use(express.json())
 //NOTE: PLEASE DON'T ADD ANY ROUTES HERE THIS IS FOR SERVER OPENING
