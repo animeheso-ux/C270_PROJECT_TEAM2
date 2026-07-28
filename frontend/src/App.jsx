@@ -1,74 +1,165 @@
-import { useState } from 'react'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
 
+import QuizPage from "./Quizpage.jsx";
+import LoginPage from "./LoginPage.jsx";
+import SignUpPage from "./SignupPage.jsx";
+import CreateQuizPage from "./Createquiz.jsx";
 
-import QuizPage from './Quizpage.jsx'
-import LoginPage from './LoginPage.jsx'
-import SignUpPage from './SignupPage.jsx'
-import CreateQuizPage from './Createquiz.jsx'
+import TeacherDashboard from "./TeacherDashboard.jsx";
+import AdminDashboard from "./AdminDashboard.jsx";
+import Navbar from "./Navbar.jsx";
 
-import TeacherDashboard from './TeacherDashboard.jsx'
-import AdminDashboard from './AdminDashboard.jsx'
-
-import Navbar from './Navbar.jsx';
+import RegisterSuccess from "./RegisterSuccess.jsx";
+import ForgotPassword from "./ForgotPassword.jsx";
+import PasswordChanged from "./PasswordChanged.jsx";
 
 function App() {
-  const [Page,SetPage] = useState("Login")
+    const [Page, SetPage] = useState("Login");
 
-  // Checks who is clicking "Learning Quest" and handles it contextually
-  const handleNavbarBrandClick = () => {
-    if (Page === "QuizCreation" || Page === "Teacher") {
-      SetPage("Teacher"); // Teachers go back to their dashboard panel
-    } else if (Page === "Quiz") {
-      SetPage("Quiz"); // Students reset to their base quiz track hub
-    }
-  };
+    const authenticationPages = [
+        "Login",
+        "Signup",
+        "RegisterSuccess",
+        "ForgotPassword",
+        "PasswordChanged",
+    ];
 
-  return (
-    <>
-    <div>
-      {Page !== "Login" && Page !== "Signup" && (
-          <Navbar 
-        ToLogin={() => SetPage("Login")} 
-        ToSignup={() => SetPage("Signup")}
-        ToLogout={() => { SetPage("Login")}}
-        OnBrandClick={handleNavbarBrandClick}
-      />
-      )}
-      
-    <div>
-      {Page === "Login" && (
-          <LoginPage 
-            ToSignup={() => SetPage("Signup")} 
-            ToQuizPage={() => SetPage("Quiz")}
-            ToTeacher={() => SetPage("Teacher")} // Hook for Teacher
-            ToAdmin={() => SetPage("Admin")}   // Hook for Admin
-          />
-        )}
-        
-        {/* STUDENT VIEW */}
-        {Page === "Quiz" && (<QuizPage ToLogin={() => SetPage("Login")} />)}
-        
-        {/* TEACHER VIEW */}
-        {Page === "Teacher" && (<TeacherDashboard ToLogin={() => SetPage("Login")}             ToCreateQuiz= {() => SetPage("QuizCreation")}  />)}
-        
-        {/* ADMIN VIEW */}
-        {Page === "Admin" && (<AdminDashboard ToLogin={() => SetPage("Login")} />)}
-        
-        {/* SIGNUP VIEW */}
-        {Page === "Signup" && (<SignUpPage ToLogin={() => SetPage("Login")} />)}
+    const handleNavbarBrandClick = () => {
+        if (
+            Page === "QuizCreation" ||
+            Page === "Teacher"
+        ) {
+            SetPage("Teacher");
+            return;
+        }
 
-        {Page === "QuizCreation" && <CreateQuizPage 
-        ToTeacher={() => SetPage("Teacher")} // Hook for Teacher
-        
-        
-        
-        />}
-      </div>
+        if (Page === "Admin") {
+            SetPage("Admin");
+            return;
+        }
 
-    </div>
-      </>
-  )
+        if (Page === "Quiz") {
+            SetPage("Quiz");
+            return;
+        }
+
+        SetPage("Login");
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem("Token");
+        SetPage("Login");
+    };
+
+    return (
+        <>
+            <div>
+                {!authenticationPages.includes(Page) && (
+                    <Navbar
+                        isLoggedIn={true}
+                        ToLogout={handleLogout}
+                        OnBrandClick={handleNavbarBrandClick}
+                    />
+                )}
+
+                <div>
+                    {Page === "Login" && (
+                        <LoginPage
+                            ToSignup={() =>
+                                SetPage("Signup")
+                            }
+                            ToForgotPassword={() =>
+                                SetPage("ForgotPassword")
+                            }
+                            ToQuizPage={() =>
+                                SetPage("Quiz")
+                            }
+                            ToTeacher={() =>
+                                SetPage("Teacher")
+                            }
+                            ToAdmin={() =>
+                                SetPage("Admin")
+                            }
+                        />
+                    )}
+
+                    {Page === "Signup" && (
+                        <SignUpPage
+                            ToLogin={() =>
+                                SetPage("Login")
+                            }
+                            ToRegisterSuccess={() =>
+                                SetPage("RegisterSuccess")
+                            }
+                        />
+                    )}
+
+                    {Page === "RegisterSuccess" && (
+                        <RegisterSuccess
+                            ToLogin={() =>
+                                SetPage("Login")
+                            }
+                        />
+                    )}
+
+                    {Page === "ForgotPassword" && (
+                        <ForgotPassword
+                            ToLogin={() =>
+                                SetPage("Login")
+                            }
+                            ToPasswordChanged={() =>
+                                SetPage("PasswordChanged")
+                            }
+                        />
+                    )}
+
+                    {Page === "PasswordChanged" && (
+                        <PasswordChanged
+                            ToLogin={() =>
+                                SetPage("Login")
+                            }
+                        />
+                    )}
+
+                    {Page === "Quiz" && (
+                        <QuizPage
+                            ToLogin={() =>
+                                SetPage("Login")
+                            }
+                        />
+                    )}
+
+                    {Page === "Teacher" && (
+                        <TeacherDashboard
+                            ToLogin={() =>
+                                SetPage("Login")
+                            }
+                            ToCreateQuiz={() =>
+                                SetPage("QuizCreation")
+                            }
+                        />
+                    )}
+
+                    {Page === "Admin" && (
+                        <AdminDashboard
+                            ToLogin={() =>
+                                SetPage("Login")
+                            }
+                        />
+                    )}
+
+                    {Page === "QuizCreation" && (
+                        <CreateQuizPage
+                            ToTeacher={() =>
+                                SetPage("Teacher")
+                            }
+                        />
+                    )}
+                </div>
+            </div>
+        </>
+    );
 }
 
-export default App
+export default App;

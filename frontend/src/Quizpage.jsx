@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react"
+import { useEffect , useState } from "react"
 
 import "./QuizPage.css"
-import { apiFetch } from "./api"
+import './Navbar.css';
+import { useSyncExternalStore } from "react"
 
 
 function BookIcon() {
     return (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
         </svg>
     )
 }
@@ -16,8 +17,8 @@ function BookIcon() {
 function ChartIcon() {
     return (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 3v18h18" />
-            <path d="M18 9l-5 5-3-3-4 4" />
+            <path d="M3 3v18h18"/>
+            <path d="M18 9l-5 5-3-3-4 4"/>
         </svg>
     )
 }
@@ -25,7 +26,7 @@ function ChartIcon() {
 function BoltIcon() {
     return (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z" />
+            <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/>
         </svg>
     )
 }
@@ -33,11 +34,11 @@ function BoltIcon() {
 function TrophyIcon() {
     return (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M8 21h8" />
-            <path d="M12 17v4" />
-            <path d="M7 4h10v5a5 5 0 0 1-10 0V4z" />
-            <path d="M7 5H4a1 1 0 0 0-1 1v1a4 4 0 0 0 4 4" />
-            <path d="M17 5h3a1 1 0 0 1 1 1v1a4 4 0 0 1-4 4" />
+            <path d="M8 21h8"/>
+            <path d="M12 17v4"/>
+            <path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/>
+            <path d="M7 5H4a1 1 0 0 0-1 1v1a4 4 0 0 0 4 4"/>
+            <path d="M17 5h3a1 1 0 0 1 1 1v1a4 4 0 0 1-4 4"/>
         </svg>
     )
 }
@@ -45,22 +46,42 @@ function TrophyIcon() {
 function ArrowIcon() {
     return (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 12h14" />
-            <path d="M13 5l7 7-7 7" />
+            <path d="M5 12h14"/>
+            <path d="M13 5l7 7-7 7"/>
         </svg>
     )
 }
 
 
-function QuizPage({ ToLogin, ToQuizCreation }) {
-    const [Topics, SetTopics] = useState([])
-    const [questions, setQuestions] = useState([]);
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [selectedAnswer, setSelectedAnswer] = useState(null);
-    const [feedback, setFeedback] = useState("");
-    const [score, setScore] = useState(0);
-    const [finished, setFinished] = useState(false);
-    const [activeModuleName, setActiveModuleName] = useState("");
+function QuizPage({ToLogin,ToQuizCreation}) {
+  const [Topics,SetTopics] = useState([])
+  const [questions, setQuestions] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [feedback, setFeedback] = useState("");
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+  const [activeModuleName, setActiveModuleName] = useState("");
+  const [activeModuleId, setActiveModuleId] = useState(null);
+  const [submissionSaved, setSubmissionSaved] = useState(false);
+  const [dashboard, setDashboard] = useState({
+    student: {
+        username: ""
+    },
+
+    summary: {
+        quizzes_taken: 0,
+        average_score: 0,
+        highest_score: 0,
+        completed_modules: 0
+    },
+
+    recent_attempts: [],
+    achievements: []
+});
+
+const [dashboardLoading, setDashboardLoading] = useState(true);
+const [dashboardError, setDashboardError] = useState("");
 
     async function GetToken() {
         const Token = localStorage.getItem("Token")
@@ -70,10 +91,10 @@ function QuizPage({ ToLogin, ToQuizCreation }) {
             return
         }
 
-        const response = await apiFetch("/GetToken", {
-            headers: {
-                "authorization": `Bearer ${Token}`,
-                "Content-Type": "application/json"
+        const response = await fetch("/GetToken",{
+            headers : {
+                "authorization" : `Bearer ${Token}`,
+                "Content-Type" : "application/json"
             }
 
         })
@@ -92,32 +113,142 @@ function QuizPage({ ToLogin, ToQuizCreation }) {
 
 
     async function GetTopics() {
-        const response = await apiFetch("/GetTopics")
+        const response = await fetch("/GetTopics")
 
         const data = await response.json()
 
         SetTopics(data.result)
     }
 
-    async function LoadQuestions(module_id) {
-        const response = await apiFetch("/GetQuestions", {
+    async function LoadStudentDashboard() {
+    try {
+        setDashboardLoading(true);
+        setDashboardError("");
+
+        const token =
+            localStorage.getItem("Token");
+
+        if (!token) {
+            ToLogin();
+            return;
+        }
+
+        const response = await fetch(
+            "/StudentDashboardData",
+            {
+                headers: {
+                    authorization:
+                        `Bearer ${token}`,
+
+                    "Content-Type":
+                        "application/json"
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (
+            !response.ok ||
+            data.status !== "success"
+        ) {
+            throw new Error(
+                data.message ||
+                "Unable to load dashboard."
+            );
+        }
+
+        setDashboard({
+            student: data.student || {
+                username: ""
+            },
+
+            summary: data.summary || {
+                quizzes_taken: 0,
+                average_score: 0,
+                highest_score: 0,
+                completed_modules: 0
+            },
+
+            recent_attempts:
+                data.recent_attempts || [],
+
+            achievements:
+                data.achievements || []
+        });
+    } catch (error) {
+        console.error(
+            "Student dashboard error:",
+            error
+        );
+
+        setDashboardError(error.message);
+    } finally {
+        setDashboardLoading(false);
+    }
+}
+
+    async function submitQuizAttempt(
+    moduleId,
+    finalScore,
+    totalQuestions
+) {
+    try {
+        const token = localStorage.getItem("Token");
+
+        if (!token) {
+            throw new Error("Login token was not found.");
+        }
+
+        const response = await fetch("/SubmitQuiz", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: module_id })
-        })
+            headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                moduleId: moduleId,
+                score: finalScore,
+                totalQuestions: totalQuestions
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.status !== "success") {
+            throw new Error(
+                data.message || "Unable to submit quiz."
+            );
+        }
+
+        console.log("Quiz submitted:", data);
+
+        return data;
+    } catch (error) {
+        console.error("Submit quiz error:", error);
+        throw error;
+    }
+}
+
+    async function LoadQuestions(module_id) {
+         const response = await fetch("/GetQuestions",{
+            method : "POST",
+            headers : {"Content-Type" : "application/json"},
+            body : JSON.stringify({id : module_id})
+         })
 
         const data = await response.json()
 
         const QuestionsWithOptions = await Promise.all(
-            data.result.map(async (question) => {
+            data.result.map(async (question)=> {
                 const OptionsData = await GetOptions(question.question_id)
 
                 const OptionsObject = {}
-                OptionsData.forEach((option, index) => {
+                OptionsData.forEach((option,index)=> {
                     OptionsObject[index + 1] = option.option_text
                 })
 
-                return { ...question, options: OptionsObject }
+                return {...question, options : OptionsObject}
             })
         )
 
@@ -125,21 +256,23 @@ function QuizPage({ ToLogin, ToQuizCreation }) {
     }
 
     async function GetOptions(question_id) {
-        const response = await apiFetch(`/GetOptions/${question_id}`)
+        const response = await fetch(`/GetOptions/${question_id}`)
 
         const data = await response.json()
 
         return data.result
     }
 
-    function HandleTopicClick(module_id, module_name) {
+    function HandleTopicClick(module_id,module_name) {
         setCurrentIndex(0)
         setSelectedAnswer(null)
         setFeedback("")
         setScore(0)
         setFinished(false)
-        setActiveModuleName(module_name)
-        LoadQuestions(module_id)
+        setSubmissionSaved(false);
+        setActiveModuleId(module_id);
+        setActiveModuleName(module_name);
+        LoadQuestions(module_id);
     }
 
     function HandleAnswerClick(optionKey) {
@@ -159,37 +292,55 @@ function QuizPage({ ToLogin, ToQuizCreation }) {
         }
     }
 
-    function HandleNext() {
+    async function HandleNext() {
         if (currentIndex + 1 < questions.length) {
-            setCurrentIndex(currentIndex + 1)
-            setSelectedAnswer(null)
-            setFeedback("")
-        }
-        else {
-            setFinished(true)
+            setCurrentIndex(currentIndex + 1);
+            setSelectedAnswer(null);
+            setFeedback("");
+        } else {
+            try {
+                await submitQuizAttempt(
+                    activeModuleId,
+                    score,
+                    questions.length
+                );
+                setSubmissionSaved(true);
+                setFinished(true);
+
+                await LoadStudentDashboard();
+
+            } catch (error) {
+                alert(
+                    error.message ||
+                    "Quiz completed, but the result could not be saved."
+                );
+            }
         }
     }
 
     function HandleRestart() {
-        setQuestions([])
-        setCurrentIndex(0)
-        setSelectedAnswer(null)
-        setFeedback("")
-        setScore(0)
-        setFinished(false)
-        setActiveModuleName("")
-    }
+    setQuestions([]);
+    setCurrentIndex(0);
+    setSelectedAnswer(null);
+    setFeedback("");
+    setScore(0);
+    setFinished(false);
+    setActiveModuleName("");
+    setActiveModuleId(null);
+    setSubmissionSaved(false);
+}
 
 
 
-    useEffect(() => {
+    useEffect(()=> {
         GetTopics()
-    }, [])
+        LoadStudentDashboard();
+    },[])
 
-    useEffect(() => {
-        if (location.port != 3000) { return }
+    useEffect(()=> {
+        if (location.port != 3000) {return}
         GetToken()
-    }, [])
+    },[])
 
 
     const OnTopicScreen = questions.length == 0
@@ -206,26 +357,26 @@ function QuizPage({ ToLogin, ToQuizCreation }) {
 
                 {OnTopicScreen && (
                     <div className="Quiz-LeftContent">
-                        <h1 className="Quiz-Headline">Pick a module.<br />Prove what you know.</h1>
+                        <h1 className="Quiz-Headline">Pick a module.<br/>Prove what you know.</h1>
                         <p className="Quiz-Subtext">Every module is a short, focused quiz. Answer at your own pace and see exactly where you stand.</p>
 
                         <div className="Quiz-FeatureList">
                             <div className="Quiz-Feature">
-                                <div className="Quiz-FeatureIcon"><BookIcon /></div>
+                                <div className="Quiz-FeatureIcon"><BookIcon/></div>
                                 <div>
                                     <div className="Quiz-FeatureTitle">{Topics.length} module{Topics.length == 1 ? "" : "s"} available</div>
                                     <div className="Quiz-FeatureSub">Pick any one to begin</div>
                                 </div>
                             </div>
                             <div className="Quiz-Feature">
-                                <div className="Quiz-FeatureIcon"><BoltIcon /></div>
+                                <div className="Quiz-FeatureIcon"><BoltIcon/></div>
                                 <div>
                                     <div className="Quiz-FeatureTitle">Instant feedback</div>
                                     <div className="Quiz-FeatureSub">Know right away if you're right</div>
                                 </div>
                             </div>
                             <div className="Quiz-Feature">
-                                <div className="Quiz-FeatureIcon"><ChartIcon /></div>
+                                <div className="Quiz-FeatureIcon"><ChartIcon/></div>
                                 <div>
                                     <div className="Quiz-FeatureTitle">Score tracking</div>
                                     <div className="Quiz-FeatureSub">See your result at the end</div>
@@ -244,12 +395,12 @@ function QuizPage({ ToLogin, ToQuizCreation }) {
                         <p className="Quiz-Subtext">Take your time. You can't go back once you move on.</p>
 
                         <div className="Quiz-ProgressTrack">
-                            <div className="Quiz-ProgressFill" style={{ width: `${((currentIndex) / questions.length) * 100}%` }}></div>
+                            <div className="Quiz-ProgressFill" style={{width : `${((currentIndex) / questions.length) * 100}%`}}></div>
                         </div>
 
                         <div className="Quiz-FeatureList">
                             <div className="Quiz-Feature">
-                                <div className="Quiz-FeatureIcon"><TrophyIcon /></div>
+                                <div className="Quiz-FeatureIcon"><TrophyIcon/></div>
                                 <div>
                                     <div className="Quiz-FeatureTitle">{score} correct so far</div>
                                     <div className="Quiz-FeatureSub">out of {currentIndex} answered</div>
@@ -279,23 +430,244 @@ function QuizPage({ ToLogin, ToQuizCreation }) {
 
                 {OnTopicScreen && (
                     <div className="Quiz-RightInner">
-                        <div className="Quiz-RightHeading">Welcome back!</div>
-                        <p className="Quiz-RightSubheading">Choose a module to start your quiz.</p>
+                        <div className="Student-DashboardHeader">
+                        <div>
+                            <div className="Quiz-RightHeading">
+                                Welcome back
+                                {dashboard.student.username
+                                    ? `, ${dashboard.student.username}`
+                                    : ""}
+                                !
+                            </div>
 
-                        <div className="Quiz-TopicGrid">
-                            {Topics.map((topic) => {
-                                return (
-                                    <button key={topic.module_id} className="Quiz-TopicCard" onClick={() => { HandleTopicClick(topic.module_id, topic.module_name) }}>
-                                        <div>
-                                            <div className="Quiz-TopicName">{topic.module_name}</div>
-                                            {topic.description && <div className="Quiz-TopicDesc">{topic.description}</div>}
-                                        </div>
-                                        <ArrowIcon />
-                                    </button>
-                                )
-                            })}
+                            <p className="Quiz-RightSubheading">
+                                Review your learning progress and
+                                choose your next quiz.
+                            </p>
                         </div>
                     </div>
+
+                    {dashboardLoading && (
+                        <div className="Student-DashboardMessage">
+                            Loading your progress...
+                        </div>
+                    )}
+
+                    {dashboardError && (
+                        <div className="Student-DashboardError">
+                            {dashboardError}
+                        </div>
+                    )}
+
+                    {!dashboardLoading && (
+                        <>
+                            <div className="Student-StatsGrid">
+
+                                <div className="Student-StatCard">
+                                    <span className="Student-StatLabel">
+                                        Quizzes Taken
+                                    </span>
+
+                                    <strong className="Student-StatValue">
+                                        {
+                                            dashboard.summary
+                                                .quizzes_taken
+                                        }
+                                    </strong>
+                                </div>
+
+                                <div className="Student-StatCard">
+                                    <span className="Student-StatLabel">
+                                        Average Score
+                                    </span>
+
+                                    <strong className="Student-StatValue">
+                                        {
+                                            dashboard.summary
+                                                .average_score
+                                        }%
+                                    </strong>
+                                </div>
+
+                                <div className="Student-StatCard">
+                                    <span className="Student-StatLabel">
+                                        Highest Score
+                                    </span>
+
+                                    <strong className="Student-StatValue">
+                                        {
+                                            dashboard.summary
+                                                .highest_score
+                                        }%
+                                    </strong>
+                                </div>
+
+                                <div className="Student-StatCard">
+                                    <span className="Student-StatLabel">
+                                        Modules Completed
+                                    </span>
+
+                                    <strong className="Student-StatValue">
+                                        {
+                                            dashboard.summary
+                                                .completed_modules
+                                        }
+                                    </strong>
+                                </div>
+
+                            </div>
+
+                            <section className="Student-DashboardSection">
+                                <div className="Student-SectionHeader">
+                                    <div>
+                                        <h2>Recent Attempts</h2>
+                                        <p>
+                                            Your five most recent
+                                            quiz results.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {dashboard.recent_attempts.length === 0 ? (
+                                    <div className="Student-EmptyState">
+                                        You have not completed a quiz yet.
+                                        Choose a module below to begin.
+                                    </div>
+                                ) : (
+                                    <div className="Student-AttemptList">
+                                        {dashboard.recent_attempts.map(
+                                            (attempt) => (
+                                                <div
+                                                    className="Student-AttemptRow"
+                                                    key={attempt.attempt_id}
+                                                >
+                                                    <div>
+                                                        <div className="Student-AttemptName">
+                                                            {attempt.module_name}
+                                                        </div>
+
+                                                        <div className="Student-AttemptScore">
+                                                            {attempt.score} out of{" "}
+                                                            {attempt.total_questions}
+                                                            {" "}correct
+                                                        </div>
+                                                    </div>
+
+                                                    <span
+                                                        className={
+                                                            Number(
+                                                                attempt.percentage
+                                                            ) >= 50
+                                                                ? "Student-ResultBadge is-pass"
+                                                                : "Student-ResultBadge is-fail"
+                                                        }
+                                                    >
+                                                        {attempt.percentage}%
+                                                    </span>
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+                                )}
+                            </section>
+
+                            <section className="Student-DashboardSection">
+                                <div className="Student-SectionHeader">
+                                    <div>
+                                        <h2>Achievements</h2>
+                                        <p>
+                                            Milestones earned from your
+                                            quiz performance.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {dashboard.achievements.length === 0 ? (
+                                    <div className="Student-EmptyState">
+                                        Complete quizzes to unlock
+                                        achievements.
+                                    </div>
+                                ) : (
+                                    <div className="Student-AchievementGrid">
+                                        {dashboard.achievements.map(
+                                            (achievement) => (
+                                                <div
+                                                    className="Student-AchievementCard"
+                                                    key={achievement.name}
+                                                >
+                                                    <div className="Student-AchievementIcon">
+                                                        {achievement.icon}
+                                                    </div>
+
+                                                    <div>
+                                                        <div className="Student-AchievementName">
+                                                            {achievement.name}
+                                                        </div>
+
+                                                        <div className="Student-AchievementDescription">
+                                                            {
+                                                                achievement.description
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+                                )}
+                            </section>
+                        </>
+                    )}
+
+                    <section className="Student-DashboardSection">
+                        <div className="Student-SectionHeader">
+                            <div>
+                                <h2>Available Modules</h2>
+                                <p>
+                                    Select a module to begin a quiz.
+                                </p>
+                            </div>
+
+                            <span className="Student-ModuleCount">
+                                {Topics.length} available
+                            </span>
+                        </div>
+
+                        {Topics.length === 0 ? (
+                            <div className="Student-EmptyState">
+                                No quiz modules are currently available.
+                            </div>
+                        ) : (
+                            <div className="Quiz-TopicGrid">
+                                {Topics.map((topic) => (
+                                    <button
+                                        key={topic.module_id}
+                                        className="Quiz-TopicCard"
+                                        onClick={() => {
+                                            HandleTopicClick(
+                                                topic.module_id,
+                                                topic.module_name
+                                            );
+                                        }}
+                                    >
+                                        <div>
+                                            <div className="Quiz-TopicName">
+                                                {topic.module_name}
+                                            </div>
+
+                                            {topic.description && (
+                                                <div className="Quiz-TopicDesc">
+                                                    {topic.description}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </section>
+
+                </div>
                 )}
 
                 {OnQuizScreen && questions[currentIndex] && (
@@ -304,7 +676,7 @@ function QuizPage({ ToLogin, ToQuizCreation }) {
                             <h2 className="Quiz-QuestionText">{questions[currentIndex].question_text}</h2>
 
                             <div className="Quiz-OptionsList">
-                                {Object.entries(questions[currentIndex].options).map(([Key, Value]) => {
+                                {Object.entries(questions[currentIndex].options).map(([Key,Value])=> {
 
                                     let RowClass = "Quiz-OptionRow"
 
@@ -321,7 +693,7 @@ function QuizPage({ ToLogin, ToQuizCreation }) {
                                     }
 
                                     return (
-                                        <button key={Key} className={RowClass} onClick={() => { HandleAnswerClick(Key) }} disabled={selectedAnswer != null}>
+                                        <button key={Key} className={RowClass} onClick={()=> {HandleAnswerClick(Key)}} disabled={selectedAnswer != null}>
                                             {Value}
                                         </button>
                                     )
@@ -351,7 +723,12 @@ function QuizPage({ ToLogin, ToQuizCreation }) {
                             {Math.round((score / questions.length) * 100) > 50 ? <h1>Well done!</h1> : <h1>Try harder next time!</h1>}
 
 
-                            <div className="Quiz-ResultSub">{score} out of {questions.length} correct</div>
+                            <div className="Quiz-ResultSub">
+                                {score} out of {questions.length} correct
+                            </div>
+
+                            <p className="mt-3"> {submissionSaved? "Your result has been saved.": "Saving your result..."}</p>
+
                             <button className="Quiz-PrimaryButton" onClick={HandleRestart}>
                                 Try another module
                             </button>

@@ -364,6 +364,27 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
     * {
-        transition: none !important;
+        transition: none ;
     }
 }
+/* =====================================================
+   LEARNING QUEST THEME OVERRIDE — MONOCHROME
+===================================================== */
+:root {
+    --accent-indigo: #111111;
+    --accent-indigo-soft: #f1f1ef;
+}
+.CQ-LeftPanel {
+    background:
+        repeating-linear-gradient(-45deg, transparent 0 12px, rgba(255,255,255,.025) 12px 13px),
+        #090909;
+}
+.CQ-StepBadge { color:#fff; border:1px solid #343434; }
+.CQ-RightPanel { background:#f5f5f2; }
+.CQ-FormHeader { background:#f5f5f2; }
+.CQ-QuestionCard { background:#fff; border-radius:18px; }
+.CQ-QuestionCard:hover { border-color:#111; box-shadow:6px 6px 0 #111; }
+.CQ-TopicInput, .CQ-Input { background:#fff; }
+.CQ-AddButton, .CQ-PrimaryButton { background:#111; border:1px solid #111; }
+.CQ-AddButton:hover, .CQ-PrimaryButton:hover { color:#111; background:#fff; }
+.CQ-Chip.is-selected { background:#111; border-color:#111; }

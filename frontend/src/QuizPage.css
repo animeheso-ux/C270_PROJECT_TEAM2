@@ -407,3 +407,691 @@ body {
         transition: none !important;
     }
 }
+
+/* =====================================================
+   STUDENT DASHBOARD
+   Minimalist Monochrome + Creative Layout
+===================================================== */
+
+.Student-DashboardHeader {
+    position: relative;
+    margin-bottom: 32px;
+    padding: 34px 36px;
+    overflow: hidden;
+    border: 1px solid #111111;
+    border-radius: 24px;
+    background: #ffffff;
+}
+
+.Student-DashboardHeader::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 170px;
+    height: 100%;
+    opacity: 0.55;
+    background:
+        repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 8px,
+            #ededed 8px,
+            #ededed 9px
+        );
+}
+
+.Student-DashboardHeader::after {
+    content: "";
+    position: absolute;
+    right: 34px;
+    bottom: 25px;
+    width: 58px;
+    height: 58px;
+    border: 2px solid #111111;
+    border-radius: 50%;
+    background: transparent;
+}
+
+.Student-DashboardHeader > * {
+    position: relative;
+    z-index: 1;
+}
+
+.Student-DashboardHeader h1 {
+    max-width: 650px;
+    margin: 0 0 10px;
+    color: #111111;
+    font-size: clamp(30px, 4vw, 50px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.045em;
+}
+
+.Student-DashboardHeader p {
+    max-width: 600px;
+    margin: 0;
+    color: #666666;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+/* =====================================================
+   DASHBOARD MESSAGES
+===================================================== */
+
+.Student-DashboardMessage,
+.Student-DashboardError,
+.Student-EmptyState {
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.Student-DashboardMessage {
+    padding: 18px 20px;
+    color: #444444;
+    background: #f7f7f7;
+    border: 1px solid #d8d8d8;
+}
+
+.Student-DashboardError {
+    padding: 18px 20px;
+    color: #111111;
+    background: #f4f4f4;
+    border: 1px solid #111111;
+}
+
+/* =====================================================
+   STAT CARDS
+===================================================== */
+
+.Student-StatsGrid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 34px;
+}
+
+.Student-StatCard {
+    position: relative;
+    min-height: 155px;
+    padding: 24px;
+    overflow: hidden;
+    border: 1px solid #cccccc;
+    border-radius: 22px;
+    background: #ffffff;
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.Student-StatCard:hover {
+    transform: translateY(-5px);
+    border-color: #111111;
+    box-shadow: 8px 8px 0 #111111;
+}
+
+.Student-StatCard:first-child {
+    color: #ffffff;
+    background: #111111;
+    border-color: #111111;
+}
+
+.Student-StatCard:first-child:hover {
+    box-shadow: 8px 8px 0 #bbbbbb;
+}
+
+.Student-StatCard::before {
+    content: "";
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 26px;
+    height: 26px;
+    border: 1px solid #111111;
+    border-radius: 50%;
+}
+
+.Student-StatCard:first-child::before {
+    border-color: #ffffff;
+}
+
+.Student-StatCard::after {
+    content: "";
+    position: absolute;
+    right: -25px;
+    bottom: -25px;
+    width: 85px;
+    height: 85px;
+    border: 1px solid #dddddd;
+    border-radius: 50%;
+}
+
+.Student-StatCard:first-child::after {
+    border-color: #444444;
+}
+
+.Student-StatLabel {
+    position: relative;
+    z-index: 1;
+    color: #777777;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.Student-StatCard:first-child .Student-StatLabel {
+    color: #bdbdbd;
+}
+
+.Student-StatValue {
+    position: absolute;
+    left: 24px;
+    bottom: 22px;
+    z-index: 1;
+    color: #111111;
+    font-size: clamp(36px, 4vw, 54px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.055em;
+}
+
+.Student-StatCard:first-child .Student-StatValue {
+    color: #ffffff;
+}
+
+/* =====================================================
+   MAIN SECTIONS
+===================================================== */
+
+.Student-DashboardSection {
+    position: relative;
+    margin-top: 30px;
+    padding: 28px;
+    border: 1px solid #d5d5d5;
+    border-radius: 24px;
+    background: #ffffff;
+}
+
+.Student-DashboardSection::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 30px;
+    width: 64px;
+    height: 4px;
+    background: #111111;
+}
+
+.Student-SectionHeader {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.Student-SectionHeader h2 {
+    margin: 0 0 5px;
+    color: #111111;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+}
+
+.Student-SectionHeader p {
+    margin: 0;
+    color: #777777;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.Student-ModuleCount {
+    padding: 8px 14px;
+    color: #111111;
+    background: #ffffff;
+    border: 1px solid #111111;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* =====================================================
+   RECENT ATTEMPTS
+===================================================== */
+
+.Student-AttemptList {
+    display: grid;
+    gap: 12px;
+}
+
+.Student-AttemptRow {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 20px 18px 26px;
+    overflow: hidden;
+    border: 1px solid #dedede;
+    border-radius: 17px;
+    background: #fafafa;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.Student-AttemptRow::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: #111111;
+}
+
+.Student-AttemptRow:hover {
+    transform: translateX(5px);
+    background: #ffffff;
+    border-color: #111111;
+}
+
+.Student-AttemptName {
+    margin-bottom: 5px;
+    color: #111111;
+    font-size: 16px;
+    font-weight: 750;
+}
+
+.Student-AttemptScore {
+    color: #777777;
+    font-size: 13px;
+}
+
+.Student-ResultBadge {
+    min-width: 78px;
+    padding: 9px 13px;
+    border-radius: 999px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.Student-ResultBadge.is-pass {
+    color: #ffffff;
+    background: #111111;
+    border: 1px solid #111111;
+}
+
+.Student-ResultBadge.is-fail {
+    color: #111111;
+    background: #ffffff;
+    border: 1px solid #111111;
+}
+
+/* =====================================================
+   ACHIEVEMENTS
+===================================================== */
+
+.Student-AchievementGrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.Student-AchievementCard {
+    position: relative;
+    min-height: 175px;
+    padding: 22px;
+    overflow: hidden;
+    border: 1px solid #d2d2d2;
+    border-radius: 22px;
+    background: #ffffff;
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.Student-AchievementCard:hover {
+    transform: translateY(-6px) rotate(-0.6deg);
+    border-color: #111111;
+    box-shadow: 7px 7px 0 #111111;
+}
+
+.Student-AchievementCard:nth-child(even):hover {
+    transform: translateY(-6px) rotate(0.6deg);
+}
+
+.Student-AchievementCard::before {
+    content: "UNLOCKED";
+    position: absolute;
+    top: 20px;
+    right: -31px;
+    width: 115px;
+    padding: 5px 0;
+    color: #ffffff;
+    background: #111111;
+    text-align: center;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    transform: rotate(45deg);
+}
+
+.Student-AchievementIcon {
+    width: 58px;
+    height: 58px;
+    margin-bottom: 20px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #111111;
+    border-radius: 50%;
+    background: #f5f5f5;
+    font-size: 25px;
+    filter: grayscale(100%);
+}
+
+.Student-AchievementName {
+    margin-bottom: 7px;
+    color: #111111;
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.Student-AchievementDescription {
+    color: #777777;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+/* =====================================================
+   EMPTY STATES
+===================================================== */
+
+.Student-EmptyState {
+    position: relative;
+    padding: 34px 24px;
+    text-align: center;
+    color: #777777;
+    background: #fafafa;
+    border: 1px dashed #a8a8a8;
+}
+
+.Student-EmptyState::before {
+    content: "○";
+    display: block;
+    margin-bottom: 10px;
+    color: #111111;
+    font-size: 34px;
+    line-height: 1;
+}
+
+/* =====================================================
+   AVAILABLE MODULES
+===================================================== */
+
+.Student-DashboardSection .Quiz-TopicGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.Student-DashboardSection .Quiz-TopicCard {
+    position: relative;
+    min-height: 112px;
+    padding: 21px 60px 21px 22px;
+    overflow: hidden;
+    border: 1px solid #d3d3d3;
+    border-radius: 20px;
+    background: #ffffff;
+    transition:
+        transform 0.22s ease,
+        border-color 0.22s ease,
+        box-shadow 0.22s ease;
+}
+
+.Student-DashboardSection .Quiz-TopicCard::before {
+    content: "→";
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #111111;
+    border-radius: 50%;
+    color: #111111;
+    background: #ffffff;
+    font-size: 17px;
+    transform: translateY(-50%);
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.Student-DashboardSection .Quiz-TopicCard:hover {
+    transform: translateY(-4px);
+    border-color: #111111;
+    box-shadow: 6px 6px 0 #111111;
+}
+
+.Student-DashboardSection .Quiz-TopicCard:hover::before {
+    color: #ffffff;
+    background: #111111;
+    transform: translateY(-50%) rotate(-20deg);
+}
+
+.Student-DashboardSection .Quiz-TopicName {
+    color: #111111;
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.Student-DashboardSection .Quiz-TopicDesc {
+    margin-top: 7px;
+    color: #777777;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* =====================================================
+   PAGE HEIGHT AND SCROLLING
+===================================================== */
+
+.Quiz-Shell {
+    min-height: 100vh;
+    height: auto;
+    background: #f1f1f1;
+}
+
+.Quiz-RightPanel {
+    min-height: 100vh;
+    height: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #f5f5f5;
+}
+
+.Quiz-RightInner {
+    width: 100%;
+    min-height: 100%;
+    height: auto;
+    padding-bottom: 60px;
+}
+
+.Quiz-RightPanel::-webkit-scrollbar {
+    width: 7px;
+}
+
+.Quiz-RightPanel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.Quiz-RightPanel::-webkit-scrollbar-thumb {
+    background: #b8b8b8;
+    border-radius: 999px;
+}
+
+.Quiz-RightPanel::-webkit-scrollbar-thumb:hover {
+    background: #111111;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 1100px) {
+    .Student-StatsGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .Student-AchievementGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .Student-DashboardHeader {
+        padding: 28px 24px;
+    }
+
+    .Student-DashboardHeader::before,
+    .Student-DashboardHeader::after {
+        opacity: 0.25;
+    }
+
+    .Student-DashboardSection {
+        padding: 22px;
+    }
+
+    .Student-AchievementGrid,
+    .Student-DashboardSection .Quiz-TopicGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .Student-StatsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .Student-SectionHeader {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .Student-AttemptRow {
+        grid-template-columns: 1fr;
+    }
+
+    .Student-ResultBadge {
+        width: fit-content;
+    }
+
+    .Student-StatCard {
+        min-height: 135px;
+    }
+
+    .Student-StatCard:hover,
+    .Student-AchievementCard:hover,
+    .Student-DashboardSection .Quiz-TopicCard:hover {
+        box-shadow: 4px 4px 0 #111111;
+    }
+}
+/* =====================================================
+   FINAL LAYOUT FIX + MONOCHROME DASHBOARD OVERRIDE
+   Prevents long student dashboards from being clipped.
+===================================================== */
+.Quiz-Shell {
+    align-items: start;
+    background: #f2f2ef;
+}
+
+.Quiz-LeftPanel {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    background:
+        repeating-linear-gradient(-45deg, transparent 0 14px, rgba(255,255,255,.025) 14px 15px),
+        #090909;
+}
+
+.Quiz-RightPanel {
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 100vh;
+    height: auto;
+    padding: 48px;
+    overflow: visible;
+    background: #f3f3f0;
+}
+
+.Quiz-RightInner {
+    width: 100%;
+    max-width: 760px;
+    min-height: 0;
+    height: auto;
+    padding: 0 0 64px;
+}
+
+/* Normal quiz screens remain compact */
+.Quiz-QuestionCard,
+.Quiz-ResultCard {
+    max-width: 520px;
+    margin: 10vh auto 0;
+}
+
+/* Dashboard content must start at the top and use the full panel width */
+.Quiz-RightPanel:has(.Student-DashboardHeader) {
+    justify-content: flex-start;
+    padding-top: 36px;
+}
+
+.Quiz-RightInner:has(.Student-DashboardHeader) {
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+.Student-DashboardHeader {
+    margin-top: 0;
+    background:
+        repeating-linear-gradient(-45deg, transparent 0 11px, #eeeeeb 11px 12px),
+        #fff;
+}
+
+.Student-StatCard,
+.Student-DashboardSection,
+.Student-AchievementCard,
+.Student-AttemptRow,
+.Student-DashboardSection .Quiz-TopicCard {
+    box-shadow: none;
+}
+
+.Student-StatCard:hover,
+.Student-AchievementCard:hover,
+.Student-DashboardSection .Quiz-TopicCard:hover {
+    box-shadow: 6px 6px 0 #111;
+}
+
+@media (max-width: 900px) {
+    .Quiz-LeftPanel {
+        position: relative;
+        height: auto;
+        min-height: 420px;
+    }
+    .Quiz-RightPanel { padding: 32px 22px; }
+    .Quiz-QuestionCard,
+    .Quiz-ResultCard { margin-top: 0; }
+}

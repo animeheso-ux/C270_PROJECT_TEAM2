@@ -1,53 +1,93 @@
-import { useState } from 'react';
+import { useState } from "react";
+import "./Navbar.css";
 
-const Navbar = ({ isLoggedIn, ToLogin, ToSignup, ToLogout,OnBrandClick }) => {
+const Navbar = ({isLoggedIn,ToLogin,ToSignup,ToLogout,OnBrandClick,
+}) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   function Logout() {
-    const Token = localStorage.getItem("Token")
+    const token = localStorage.getItem("Token");
 
-    if (!Token) {return}
+    if (token) {
+      localStorage.removeItem("Token");
+    }
 
+    setShowDropdown(false);
 
-    localStorage.removeItem("Token")
-    ToLogout()
+    if (ToLogout) {
+      ToLogout();
+    }
   }
 
   return (
-    <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 50px', position: 'relative' }}>
-      <div 
-        onClick={OnBrandClick} 
-        style={{ fontWeight: 'bold', fontSize: '1.2rem', cursor: 'pointer', userSelect: 'none' }}>Learning Quest
-      </div>
+    <nav className="LQ-Navbar">
+      <button
+        type="button" className="LQ-NavbarBrand" onClick={OnBrandClick}>
+        <span className="LQ-BrandMark">LQ</span>
 
-      <div style={{ display: 'flex', gap: '15px' }}>
+        <span className="LQ-BrandText">Learning Quest
+          <small>Learn. Practice. Progress.</small>
+        </span>
+      </button>
+
+      <div className="LQ-NavbarActions">
         {isLoggedIn ? (
-          <div style={{ position: 'relative' }}>
-            <button onClick={() => setShowDropdown(!showDropdown)} style={buttonStyle}>
+          <div className="LQ-AccountWrapper">
+            <button
+              type="button" className="LQ-AccountButton" onClick={() => setShowDropdown((previous) => !previous)}aria-expanded={showDropdown}>
+              <span className="LQ-AccountIcon">●</span>
               Account
+              <span
+                className={`LQ-DropdownArrow ${
+                  showDropdown ? "is-open" : ""
+                }`}
+              >
+                ↓
+              </span>
             </button>
-            {/* Dropdown Menu */}
+
             {showDropdown && (
-              <div style={dropdownStyle}>
-                <button style={menuItemStyle}>Profile</button>
-                <button style={menuItemStyle}>Settings</button>
+              <div className="LQ-Dropdown">
+                <div className="LQ-DropdownLabel">Account menu</div>
+
+                <button
+                  type="button" className="LQ-DropdownItem" onClick={() => setShowDropdown(false)}
+                >
+                  <span>Profile</span>
+                  <span>→</span>
+                </button>
+
+                <button
+                  type="button" className="LQ-DropdownItem" onClick={() => setShowDropdown(false)}>
+                  <span>Settings</span>
+                  <span>→</span>
+                </button>
+
+                <div className="LQ-DropdownDivider" />
+
+                <button
+                  type="button" className="LQ-DropdownItem LQ-LogoutItem" onClick={Logout}>
+                  <span>Log out</span>
+                  <span>↗</span>
+                </button>
               </div>
             )}
           </div>
         ) : (
           <>
-            <button onClick={Logout} style={menuItemStyle}>Log out</button>
+            <button
+              type="button" className="LQ-TextButton" onClick={ToLogin}>Log in
+            </button>
 
+            <button
+              type="button" className="LQ-SignupButton" onClick={ToSignup}>Create account
+              <span>→</span>
+            </button>
           </>
         )}
       </div>
     </nav>
   );
 };
-
-// Styles
-const buttonStyle = { backgroundColor: '#000', color: '#fff', padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600' };
-const dropdownStyle = { position: 'absolute', top: '45px', right: '0', background: '#fff', border: '1px solid #ddd', borderRadius: '8px', padding: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', gap: '5px' };
-const menuItemStyle = { background: 'transparent', border: 'none', textAlign: 'left', padding: '5px 10px', cursor: 'pointer' };
 
 export default Navbar;
