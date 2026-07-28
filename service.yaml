@@ -1,0 +1,64 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+    run.googleapis.com/invoker-iam-disabled: 'true'
+    run.googleapis.com/maxScale: '20'
+    run.googleapis.com/urls: '["https://backend-203838961883.us-central1.run.app","https://backend-s74bfkemjq-uc.a.run.app"]'
+  labels:
+    cloud.googleapis.com/location: us-central1
+  name: backend
+  namespace: '203838961883'
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '20'
+        run.googleapis.com/client-name: cloud-console
+        run.googleapis.com/secrets: secret-a1d2b646-e8a8-4c5d-8d80-fe8bbc379730:projects/c270-backend/secrets/db-password,secret-f18c9357-9161-46cd-8598-8909190c1032:projects/c270-backend/secrets/jwt-secret
+        run.googleapis.com/startup-cpu-boost: 'true'
+      labels:
+        client.knative.dev/nonce: c9a76af0-4260-4b37-bdd6-923862c2de01
+        run.googleapis.com/startupProbeType: Default
+    spec:
+      containerConcurrency: 80
+      containers:
+      - env:
+        - name: DB_HOST
+          value: pqoqdx.h.filess.io
+        - name: DB_USER
+          value: Learning_Quest_raystincan
+        - name: DB_NAME
+          value: Learning_Quest_raystincan
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: latest
+              name: secret-a1d2b646-e8a8-4c5d-8d80-fe8bbc379730
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: latest
+              name: secret-f18c9357-9161-46cd-8598-8909190c1032
+        image: us-central1-docker.pkg.dev/c270-backend/my-repo/backend@sha256:ac25ee6a6f3d4307e86d47f435ec8e60f9bb8901f2f981bb61a8c43e8124f228
+        name: backend-1
+        ports:
+        - containerPort: 3000
+          name: http1
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+        startupProbe:
+          failureThreshold: 1
+          periodSeconds: 240
+          tcpSocket:
+            port: 3000
+          timeoutSeconds: 240
+      serviceAccountName: 203838961883-compute@developer.gserviceaccount.com
+      timeoutSeconds: 300
+  traffic:
+  - latestRevision: true
+    percent: 100

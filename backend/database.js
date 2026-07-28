@@ -5,6 +5,7 @@ const jsonwebtoken = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 const { VerifyToken } = require("./token");
+const { Truck } = require("lucide-react");
 
 require("dotenv").config();
 
@@ -37,34 +38,21 @@ const DatabaseRouter = express.Router();
 
 const passwordResetCodes = new Map();
 
-const database = mysql.createConnection({
+const database = mysql.createPool({
     host: process.env.DB_HOST || "localhost",
     user: process.env.DB_USER || "root",
     password: process.env.DB_PASSWORD || "RP738964$",
     database: process.env.DB_NAME || "learning_quest",
-    port : "3307"
+    port: process.env.DB_PORT || 3307,
+    ssl: {
+        rejectUnauthorized: false
+    },
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
-database.connect((err) => {
-    if (err) {
-        console.error("MYSQL CONNECTION ERROR:", err);
-        return;
-    }
 
-    console.log("MYSQL CONNECTED!");
-
-    database.query("ALTER TABLE users ADD COLUMN phone VARCHAR(30) NULL", (phoneErr) => {
-        if (phoneErr && phoneErr.code !== "ER_DUP_FIELDNAME") {
-            console.error("ADD PHONE COLUMN ERROR:", phoneErr);
-        }
-    });
-
-    database.query("ALTER TABLE users ADD COLUMN address TEXT NULL", (addressErr) => {
-        if (addressErr && addressErr.code !== "ER_DUP_FIELDNAME") {
-            console.error("ADD ADDRESS COLUMN ERROR:", addressErr);
-        }
-    });
-});
 
 
 DatabaseRouter.get("/GetUsers", (req, res) => {
