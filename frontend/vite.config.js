@@ -28,6 +28,11 @@ export default defineConfig({
                 changeOrigin: true
             },
 
+            "/Profile": {
+                target: proxyTarget,
+                changeOrigin: true
+            },
+
             "/GetTopics": {
                 target: proxyTarget,
                 changeOrigin: true
