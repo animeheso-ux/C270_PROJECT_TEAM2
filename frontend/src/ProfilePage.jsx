@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./ProfilePage.css";
 
-function ProfilePage() {
+function ProfilePage({ ToBack, ToMain }) {
     const [profile, setProfile] = useState({
         username: "",
         email: "",
@@ -71,6 +71,10 @@ function ProfilePage() {
             }
 
             setMessage("Profile updated successfully.");
+
+            if (ToMain) {
+                ToMain();
+            }
         } catch (err) {
             setError(err.message);
         } finally {
@@ -89,6 +93,10 @@ function ProfilePage() {
     return (
         <div className="profile-page">
             <div className="profile-card">
+                <button className="profile-back-btn" type="button" onClick={ToBack}>
+                    ← Back
+                </button>
+
                 <div className="profile-header">
                     <div>
                         <p className="profile-kicker">Account</p>
