@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./Navbar.css";
 
-const Navbar = ({isLoggedIn,ToLogin,ToSignup,ToLogout,OnBrandClick,
+const Navbar = ({isLoggedIn,ToLogin,ToSignup,ToLogout,OnBrandClick,OnProfileClick,
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -51,7 +51,7 @@ const Navbar = ({isLoggedIn,ToLogin,ToSignup,ToLogout,OnBrandClick,
                 <div className="LQ-DropdownLabel">Account menu</div>
 
                 <button
-                  type="button" className="LQ-DropdownItem" onClick={() => setShowDropdown(false)}
+                  type="button" className="LQ-DropdownItem" onClick={() => { setShowDropdown(false); OnProfileClick?.(); }}
                 >
                   <span>Profile</span>
                   <span>→</span>

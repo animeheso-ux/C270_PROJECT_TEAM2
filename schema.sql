@@ -6,7 +6,9 @@ CREATE TABLE users (
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    role VARCHAR(255) NULL
+    role VARCHAR(255) NULL,
+    phone VARCHAR(30) NULL,
+    address TEXT NULL
 );
 
 CREATE TABLE modules (

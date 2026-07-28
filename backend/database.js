@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const jsonwebtoken = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
+const { VerifyToken } = require("./token");
 
 require("dotenv").config();
 
@@ -50,6 +51,18 @@ database.connect((err) => {
     }
 
     console.log("MYSQL CONNECTED!");
+
+    database.query("ALTER TABLE users ADD COLUMN phone VARCHAR(30) NULL", (phoneErr) => {
+        if (phoneErr && phoneErr.code !== "ER_DUP_FIELDNAME") {
+            console.error("ADD PHONE COLUMN ERROR:", phoneErr);
+        }
+    });
+
+    database.query("ALTER TABLE users ADD COLUMN address TEXT NULL", (addressErr) => {
+        if (addressErr && addressErr.code !== "ER_DUP_FIELDNAME") {
+            console.error("ADD ADDRESS COLUMN ERROR:", addressErr);
+        }
+    });
 });
 
 
@@ -71,6 +84,43 @@ DatabaseRouter.get("/GetUsers", (req, res) => {
 
 DatabaseRouter.get("/AuditLogs", (req, res) => {
     return res.json({ status: "success", result: [] });
+});
+
+DatabaseRouter.get("/Profile", VerifyToken, (req, res) => {
+    database.query(
+        "SELECT id, username, email, phone, address FROM users WHERE id = ? LIMIT 1",
+        [req.Token.id],
+        (err, results) => {
+            if (err) {
+                console.error("GET PROFILE ERROR:", err);
+                return res.status(500).json({ status: "error", message: "Unable to load profile." });
+            }
+
+            if (results.length === 0) {
+                return res.status(404).json({ status: "error", message: "Profile not found." });
+            }
+
+            return res.json({ status: "success", result: results[0] });
+        }
+    );
+});
+
+DatabaseRouter.put("/Profile", VerifyToken, (req, res) => {
+    const phone = req.body.phone?.trim() || null;
+    const address = req.body.address?.trim() || null;
+
+    database.query(
+        "UPDATE users SET phone = ?, address = ? WHERE id = ?",
+        [phone, address, req.Token.id],
+        (err) => {
+            if (err) {
+                console.error("UPDATE PROFILE ERROR:", err);
+                return res.status(500).json({ status: "error", message: "Unable to update profile." });
+            }
+
+            return res.json({ status: "success", message: "Profile updated successfully." });
+        }
+    );
 });
 
 DatabaseRouter.post("/CreateAccount",async (req, res) => {
@@ -177,12 +227,15 @@ DatabaseRouter.post("/CreateAccount",async (req, res) => {
                             }
 
                             try {
-                                await emailTransporter.sendMail({
-                                    from: `"Learning Quest" <${process.env.EMAIL_USER}>`,
-                                    to: email,
-                                    subject: "Welcome to Learning Quest",
+                                if (!emailTransporter) {
+                                    console.warn("Welcome email skipped because email service is not configured.");
+                                } else {
+                                    await emailTransporter.sendMail({
+                                        from: `"Learning Quest" <${process.env.EMAIL_USER}>`,
+                                        to: email,
+                                        subject: "Welcome to Learning Quest",
 
-                                    html: `
+                                        html: `
                                         <h2>Welcome to Learning Quest!</h2>
                                         <p>Hello <b>${username}</b>,</p>
 
@@ -229,9 +282,10 @@ DatabaseRouter.post("/CreateAccount",async (req, res) => {
                                     `,
                                 });
 
-                                console.log(
-                                    `Welcome email sent to ${email}`
-                                );
+                                    console.log(
+                                        `Welcome email sent to ${email}`
+                                    );
+                                }
                             } catch (emailError) {
                                 console.error(
                                     "WELCOME EMAIL ERROR:",

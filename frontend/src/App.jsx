@@ -13,6 +13,7 @@ import Navbar from "./Navbar.jsx";
 import RegisterSuccess from "./RegisterSuccess.jsx";
 import ForgotPassword from "./ForgotPassword.jsx";
 import PasswordChanged from "./PasswordChanged.jsx";
+import ProfilePage from "./ProfilePage.jsx";
 
 function App() {
     const [Page, SetPage] = useState("Login");
@@ -60,6 +61,7 @@ function App() {
                         isLoggedIn={true}
                         ToLogout={handleLogout}
                         OnBrandClick={handleNavbarBrandClick}
+                        OnProfileClick={() => SetPage("Profile")}
                     />
                 )}
 
@@ -155,6 +157,10 @@ function App() {
                                 SetPage("Teacher")
                             }
                         />
+                    )}
+
+                    {Page === "Profile" && (
+                        <ProfilePage />
                     )}
                 </div>
             </div>
