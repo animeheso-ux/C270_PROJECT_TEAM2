@@ -1,0 +1,334 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+
+.LQ-Navbar {
+  position: relative;
+  z-index: 1000;
+
+  width: 100%;
+  min-height: 82px;
+  padding: 16px 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid #d8d8d8;
+
+  font-family: "Inter", sans-serif;
+}
+
+.LQ-Navbar::after {
+  content: "";
+  position: absolute;
+  left: 48px;
+  bottom: -1px;
+
+  width: 76px;
+  height: 3px;
+
+  background: #111111;
+}
+
+/* Brand */
+
+.LQ-NavbarBrand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  padding: 0;
+
+  color: #111111;
+  background: transparent;
+  border: none;
+
+  text-align: left;
+  cursor: pointer;
+}
+
+.LQ-BrandMark {
+  width: 43px;
+  height: 43px;
+
+  display: grid;
+  place-items: center;
+
+  color: #ffffff;
+  background: #111111;
+  border: 1px solid #111111;
+  border-radius: 13px;
+
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.LQ-NavbarBrand:hover .LQ-BrandMark {
+  color: #111111;
+  background: #ffffff;
+  transform: rotate(-7deg);
+}
+
+.LQ-BrandText {
+  display: flex;
+  flex-direction: column;
+
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+
+.LQ-BrandText small {
+  margin-top: 4px;
+
+  color: #888888;
+
+  font-family: "Inter", sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+/* Actions */
+
+.LQ-NavbarActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.LQ-TextButton,
+.LQ-SignupButton,
+.LQ-AccountButton {
+  min-height: 43px;
+  padding: 0 18px;
+
+  border-radius: 999px;
+
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.LQ-TextButton {
+  color: #111111;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.LQ-TextButton:hover {
+  border-color: #111111;
+}
+
+.LQ-SignupButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #ffffff;
+  background: #111111;
+  border: 1px solid #111111;
+}
+
+.LQ-SignupButton:hover {
+  color: #111111;
+  background: #ffffff;
+  box-shadow: 4px 4px 0 #111111;
+  transform: translate(-2px, -2px);
+}
+
+/* Account */
+
+.LQ-AccountWrapper {
+  position: relative;
+}
+
+.LQ-AccountButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #111111;
+  background: #ffffff;
+  border: 1px solid #111111;
+}
+
+.LQ-AccountButton:hover {
+  color: #ffffff;
+  background: #111111;
+}
+
+.LQ-AccountIcon {
+  font-size: 8px;
+}
+
+.LQ-DropdownArrow {
+  display: inline-block;
+  font-size: 14px;
+  transition: transform 0.2s ease;
+}
+
+.LQ-DropdownArrow.is-open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown */
+
+.LQ-Dropdown {
+  position: absolute;
+  top: calc(100% + 14px);
+  right: 0;
+
+  width: 230px;
+  padding: 10px;
+
+  background: #ffffff;
+  border: 1px solid #111111;
+  border-radius: 17px;
+  box-shadow: 7px 7px 0 #111111;
+}
+
+.LQ-Dropdown::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  right: 28px;
+
+  width: 12px;
+  height: 12px;
+
+  background: #ffffff;
+  border-top: 1px solid #111111;
+  border-left: 1px solid #111111;
+
+  transform: rotate(45deg);
+}
+
+.LQ-DropdownLabel {
+  padding: 9px 11px 11px;
+
+  color: #929292;
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.LQ-DropdownItem {
+  width: 100%;
+  padding: 12px 11px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  color: #111111;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.LQ-DropdownItem:hover {
+  color: #ffffff;
+  background: #111111;
+}
+
+.LQ-DropdownDivider {
+  height: 1px;
+  margin: 7px 4px;
+
+  background: #dddddd;
+}
+
+.LQ-LogoutItem {
+  color: #555555;
+}
+
+/* Keyboard accessibility */
+
+.LQ-Navbar button:focus-visible {
+  outline: 2px solid #111111;
+  outline-offset: 3px;
+}
+
+/* Responsive */
+
+@media (max-width: 700px) {
+  .LQ-Navbar {
+    min-height: 70px;
+    padding: 13px 20px;
+  }
+
+  .LQ-Navbar::after {
+    left: 20px;
+  }
+
+  .LQ-BrandMark {
+    width: 39px;
+    height: 39px;
+  }
+
+  .LQ-BrandText {
+    font-size: 15px;
+  }
+
+  .LQ-BrandText small {
+    display: none;
+  }
+
+  .LQ-TextButton {
+    display: none;
+  }
+
+  .LQ-SignupButton,
+  .LQ-AccountButton {
+    padding: 0 14px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 430px) {
+  .LQ-BrandText {
+    display: none;
+  }
+
+  .LQ-Dropdown {
+    position: fixed;
+    top: 76px;
+    right: 16px;
+    left: 16px;
+
+    width: auto;
+  }
+
+  .LQ-Dropdown::before {
+    display: none;
+  }
+}

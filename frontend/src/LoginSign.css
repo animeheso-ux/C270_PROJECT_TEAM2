@@ -242,3 +242,71 @@ body{
     font-size: 0.85rem;
     margin-top: 4px;
 }
+/* =====================================================
+   LEARNING QUEST THEME OVERRIDE — LOGIN
+===================================================== */
+:root { --accent:#111111; }
+body { background:#ececea; }
+.page-container {
+    background:
+        linear-gradient(rgba(0,0,0,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,.035) 1px, transparent 1px),
+        #ececea;
+    background-size:32px 32px;
+}
+.login-wrapper { border:1px solid #111; border-radius:24px; box-shadow:10px 10px 0 #111; }
+.login-wrapper .left-panel {
+    background:
+        repeating-linear-gradient(-45deg, transparent 0 13px, rgba(255,255,255,.03) 13px 14px),
+        #090909;
+}
+.feature-icon { border:1px solid #333; color:#fff; background:#171717; }
+.form-control:focus { border-color:#111; box-shadow:0 0 0 3px rgba(0,0,0,.1); }
+.login-btn { border:1px solid #111; }
+.login-btn:hover { color:#111; background:#fff; box-shadow:4px 4px 0 #111; }
+.login-card .btn-link, .signup-link { color:#111; }
+
+.auth-login-options {
+    margin: 4px 0 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.auth-remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: #555555;
+    font-size: 12px;
+}
+
+.auth-remember input {
+    accent-color: #111111;
+}
+
+.auth-forgot-button,
+.auth-text-button {
+    padding: 0;
+
+    color: #111111;
+    background: transparent;
+    border: none;
+
+    font-family: inherit;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.auth-forgot-button {
+    font-size: 12px;
+}
+
+.auth-forgot-button:hover,
+.auth-text-button:hover {
+    text-decoration: underline;
+}
