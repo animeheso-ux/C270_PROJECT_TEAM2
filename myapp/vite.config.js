@@ -1,80 +1,86 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
+const backendTarget =
+  process.env.VITE_BACKEND_TARGET || "http://localhost:3000";
+
 export default defineConfig({
-    plugins: [react()],
+  plugins: [react()],
 
-    server: {
-        proxy: {
-            "/Login": {
-                target: "http://localhost:3000",
-                changeOrigin: true
-            },
+  server: {
+    host: "0.0.0.0",
+    port: 5173,
 
-            "/CreateAccount": {
-                target: "http://localhost:3000",
-                changeOrigin: true
-            },
+    proxy: {
+      "/Login": {
+        target: backendTarget,
+        changeOrigin: true
+      },
 
-            "/GetToken": {
-                target: "http://localhost:3000",
-                changeOrigin: true
-            },
+      "/CreateAccount": {
+        target: backendTarget,
+        changeOrigin: true
+      },
 
-            "/GetUsers": {
-                target: "http://localhost:3000",
-                changeOrigin: true
-            },
+      "/GetToken": {
+        target: backendTarget,
+        changeOrigin: true
+      },
 
-            "/GetTopics": {
-                target: "http://localhost:3000",
-                changeOrigin: true
-            },
+      "/GetUsers": {
+        target: backendTarget,
+        changeOrigin: true
+      },
 
-            "/GetQuestions": {
-                target: "http://localhost:3000",
-                changeOrigin: true
-            },
+      "/GetTopics": {
+        target: backendTarget,
+        changeOrigin: true
+      },
 
-            "/GetOptions": {
-                target: "http://localhost:3000",
-                changeOrigin: true
-            },
+      "/GetQuestions": {
+        target: backendTarget,
+        changeOrigin: true
+      },
 
-            "/CreateQuiz": {
-                target: "http://localhost:3000",
-                changeOrigin: true
-            },
+      "/GetOptions": {
+        target: backendTarget,
+        changeOrigin: true
+      },
 
-            "/SubmitQuiz": {
-                target: "http://localhost:3000",
-                changeOrigin: true
-            },
+      "/CreateQuiz": {
+        target: backendTarget,
+        changeOrigin: true
+      },
 
-            "/TeacherDashboardData": {
-                target: "http://localhost:3000",
-                changeOrigin: true
-            },
+      "/SubmitQuiz": {
+        target: backendTarget,
+        changeOrigin: true
+      },
 
-            "/DeleteQuiz": {
-                target: "http://localhost:3000",
-                changeOrigin: true
-            },
+      "/TeacherDashboardData": {
+        target: backendTarget,
+        changeOrigin: true
+      },
 
-            "/AdminQuizAnalytics": {
-                target: "http://localhost:3000",
-                changeOrigin: true
-            },
-            
-            "/StudentDashboardData": {
-              target: "http://localhost:3000",
-              changeOrigin: true
-            },
+      "/DeleteQuiz": {
+        target: backendTarget,
+        changeOrigin: true
+      },
 
-            "/AuditLogs": {
-              target: "http://localhost:3000",
-              changeOrigin: true
-            },
-        }
+      "/AdminQuizAnalytics": {
+        target: backendTarget,
+        changeOrigin: true
+      },
+
+      "/StudentDashboardData": {
+        target: backendTarget,
+        changeOrigin: true
+      },
+
+      "/AuditLogs": {
+        target: backendTarget,
+        changeOrigin: true
+      }
     }
+  }
 });

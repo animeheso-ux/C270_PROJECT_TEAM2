@@ -5,27 +5,47 @@ services:
       MYSQL_DATABASE: learning_quest
       MYSQL_ROOT_PASSWORD: RP738964$
     ports:
-      - "3307:3306"
+      - "3308:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-pRP738964$"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   backend:
     build: .
     restart: on-failure
     environment:
-      DB_HOST: mysql
-      DB_USER: root
-      DB_PASSWORD: RP738964$
-      DB_NAME: learning_quest
+      DB_HOST: pqoqdx.h.filess.io
+      DB_PORT: 3307
+      DB_USER: Learning_Quest_raystincan
+      DB_PASSWORD: beaec4bbf0e15a36d0be556e6024ef9dd7a0ac6d
+      DB_NAME: Learning_Quest_raystincan
       JWT_SECRET: 9d7c2f7ef8f1f6d7f2b4b58f68ce9f6e5f119f4a89c47dce24e615497f03c3bc
+      BUILD_FRONTEND: "false"
+      EMAIL_USER: learningquest.c270@gmail.com
+      EMAIL_APP_PASSWORD: cocm goeh dfdm itpy
     ports:
-      - "3000:3000"
+      - "3001:3000"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
 
   frontend:
     build: ./myapp
+    environment:
+      VITE_BACKEND_TARGET: http://backend:3000
     ports:
       - "5173:5173"
     depends_on:

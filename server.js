@@ -1,61 +1,21 @@
-const express = require("express")
-const cors = require("cors");
-const {exec} = require("node:child_process")
+const http = require("http");
+const { exec } = require("node:child_process");
 
-const http = require("http")
-const path = require("path")
+const app = require("./app");
 
-const {DatabaseRouter,database} = require("./database")
-const {QuizRouter} = require("./Quiz")
-const { TokenRouter } = require("./token")
+const PORT = process.env.PORT || 3000;
+const server = http.createServer(app);
 
+if (process.env.BUILD_FRONTEND === "true") {
+    exec("cd myapp && npm run build", (error, stdout, stderr) => {
+        if (error) {
+            console.error("REACT BUILD ERROR:", error);
+            return;
+        }
 
-const app = express()
-const PORT = 3000
-
-const server = http.createServer(app)
-
-app.use(
-    cors({
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-    })
-);
-
-
-app.use(express.json())
-//NOTE: PLEASE DON'T ADD ANY ROUTES HERE THIS IS FOR SERVER OPENING
-//routes
-
-app.use(DatabaseRouter)
-app.use(QuizRouter)
-app.use(TokenRouter)
-
-
-
-
-
-
-
-
-
-app.use(express.static(path.join(__dirname,"myapp/dist")))
-
-
-app.get("/{*path}",(req,res)=> {
-    res.sendFile(path.join(__dirname,"myapp/dist","index.html"))
-})
-
-
-exec("cd myapp && npm run build" ,(err)=> {
-    if (err) {
-        throw err
-    }
-
-    console.log("REACT BUILD : SUCCESS",`http://localhost:${PORT}`)
-})
-
-
-
-server.listen(PORT,()=> console.log(`http://localhost:${PORT}`),exec(`start http://localhost:${PORT}`))
+        console.log(stdout);
+    });
+}
+server.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});

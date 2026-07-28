@@ -16,18 +16,16 @@ const emailTransporter = nodemailer.createTransport({
         },
     });
 
-    emailTransporter.verify((error, success) => {
+    if (process.env.NODE_ENV !== "test") {
+        emailTransporter.verify((error) => {
+            if (error) {
+                console.error("EMAIL SERVER ERROR:", error);
+                return;
+            }
 
-    if (error) {
-        console.log(error);
-
-    } else {
-        console.log("Email server is ready!");
-
+            console.log("Email server is ready!");
+        });
     }
-
-});
-
 
 
 const SALT_ROUNDS = 10;
@@ -35,21 +33,48 @@ const DatabaseRouter = express.Router();
 
 const passwordResetCodes = new Map();
 
-const database = mysql.createConnection({
-    host: process.env.DB_HOST || "localhost",
-    user: process.env.DB_USER || "root",
-    password: process.env.DB_PASSWORD || "RP738964$",
-    database: process.env.DB_NAME || "learning_quest",
-});
+var hostname = "pqoqdx.h.filess.io";
+var database_name = "Learning_Quest_raystincan";
+var PORT = "3307";
+var username = "Learning_Quest_raystincan";
+var PASSWORD = "beaec4bbf0e15a36d0be556e6024ef9dd7a0ac6d";
 
-database.connect((err) => {
-    if (err) {
-        console.error("MYSQL CONNECTION ERROR:", err);
-        return;
-    }
+let database;
 
-    console.log("MYSQL CONNECTED!");
-});
+if (process.env.NODE_ENV === "test") {
+    // Fake database object for tests that do not require MySQL
+    database = {
+        query: () => {
+            throw new Error(
+                "Database queries are disabled in this test."
+            );
+        },
+
+        end: (callback) => {
+            if (callback) callback();
+        },
+    };
+} else {
+    database = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME,
+        port: process.env.DB_PORT || 3307,
+    });
+
+    database.connect((err) => {
+        if (err) {
+            console.error(
+                "DATABASE CONNECTION ERROR:",
+                err
+            );
+            return;
+        }
+
+        console.log("Database connected!");
+    });
+}
 
 function createAuditLog({
     userId = null,
@@ -848,4 +873,5 @@ DatabaseRouter.get(
 module.exports = {
     DatabaseRouter,
     database,
+    passwordResetCodes
 };
