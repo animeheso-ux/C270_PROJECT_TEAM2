@@ -17,6 +17,7 @@ import ProfilePage from "./ProfilePage.jsx";
 
 function App() {
     const [Page, SetPage] = useState("Login");
+    const [PreviousPage, SetPreviousPage] = useState("Quiz");
 
     const authenticationPages = [
         "Login",
@@ -48,9 +49,38 @@ function App() {
         SetPage("Login");
     };
 
+    const getMainPage = () => {
+        const token = localStorage.getItem("Token");
+
+        if (!token) {
+            return "Quiz";
+        }
+
+        try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+
+            if (payload.role === "admin") {
+                return "Admin";
+            }
+
+            if (payload.role === "teacher") {
+                return "Teacher";
+            }
+        } catch (err) {
+            console.error("Unable to read token role:", err);
+        }
+
+        return "Quiz";
+    };
+
     const handleLogout = () => {
         localStorage.removeItem("Token");
         SetPage("Login");
+    };
+
+    const handleProfileClick = () => {
+        SetPreviousPage(Page);
+        SetPage("Profile");
     };
 
     return (
@@ -61,7 +91,7 @@ function App() {
                         isLoggedIn={true}
                         ToLogout={handleLogout}
                         OnBrandClick={handleNavbarBrandClick}
-                        OnProfileClick={() => SetPage("Profile")}
+                        OnProfileClick={handleProfileClick}
                     />
                 )}
 
@@ -160,7 +190,10 @@ function App() {
                     )}
 
                     {Page === "Profile" && (
-                        <ProfilePage />
+                        <ProfilePage
+                            ToBack={() => SetPage(PreviousPage || getMainPage())}
+                            ToMain={() => SetPage(getMainPage())}
+                        />
                     )}
                 </div>
             </div>
