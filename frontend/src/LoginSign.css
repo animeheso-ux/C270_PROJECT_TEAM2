@@ -284,9 +284,6 @@ body { background:#ececea; }
     font-size: 12px;
 }
 
-.auth-remember input {
-    accent-color: #111111;
-}
 
 .auth-forgot-button,
 .auth-text-button {

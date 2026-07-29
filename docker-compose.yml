@@ -24,6 +24,8 @@ services:
       DB_PASSWORD: RP738964$
       DB_NAME: learning_quest
       JWT_SECRET: 9d7c2f7ef8f1f6d7f2b4b58f68ce9f6e5f119f4a89c47dce24e615497f03c3bc
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_APP_PASSWORD: ${EMAIL_APP_PASSWORD}
     ports:
       - "3000:3000"
     depends_on:

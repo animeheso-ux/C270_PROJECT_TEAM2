@@ -271,11 +271,7 @@ function LoginPage({ToQuizPage,ToSignup,ToTeacher,ToAdmin,ToForgotPassword,}) {
                             </div>
 
                             <div className="auth-login-options">
-                                <label className="auth-remember">
-                                    <input type="checkbox" id="rememberMe"/>
-                                    <span>Remember me</span>
-                                </label>
-
+                                <label className="auth-remember"></label>
                                 <button
                                     type="button" className="auth-forgot-button" onClick={ToForgotPassword}>Forgot password?
                                 </button>
