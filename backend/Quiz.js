@@ -21,16 +21,19 @@ QuizRouter.post("/CreateQuiz", VerifyToken, async (req, res) => {
         });
     }
 
-    try {
-        await database.promise().beginTransaction();
+    const connection = await database.promise().getConnection();
 
-        const [existing] = await database.promise().query(
+    try {
+        await connection.beginTransaction();
+
+        const [existing] = await connection.query(
             "SELECT module_id FROM modules WHERE module_name = ?",
             [Topic]
         );
 
         if (existing.length > 0) {
-            await database.promise().rollback();
+            await connection.rollback();
+            connection.release();
 
             return res.json({
                 status: "topic exist",
@@ -38,10 +41,10 @@ QuizRouter.post("/CreateQuiz", VerifyToken, async (req, res) => {
             });
         }
 
-        const [moduleResult] = await database.promise().query(
+        const [moduleResult] = await connection.query(
             `
-            INSERT INTO modules (module_name, description,teacher_id)
-            VALUES (?, ?,?)
+            INSERT INTO modules (module_name, description, teacher_id)
+            VALUES (?, ?, ?)
             `,
             [Topic, "A quiz", req.Token.id]
         );
@@ -49,7 +52,7 @@ QuizRouter.post("/CreateQuiz", VerifyToken, async (req, res) => {
         const moduleId = moduleResult.insertId;
 
         for (const quiz of Quiz) {
-            const [questionResult] = await database.promise().query(
+            const [questionResult] = await connection.query(
                 `
                 INSERT INTO questions
                 (module_id, question_text, answer)
@@ -59,10 +62,11 @@ QuizRouter.post("/CreateQuiz", VerifyToken, async (req, res) => {
             );
 
             const questionId = questionResult.insertId;
+
             const options = Object.values(quiz.Options || {});
 
             for (const option of options) {
-                await database.promise().query(
+                await connection.query(
                     `
                     INSERT INTO options
                     (question_id, option_text)
@@ -73,21 +77,24 @@ QuizRouter.post("/CreateQuiz", VerifyToken, async (req, res) => {
             }
         }
 
-        await database.promise().commit();
+        await connection.commit();
+        connection.release();
 
         return res.json({
             status: "success",
             message: "Quiz created successfully.",
             module_id: moduleId
         });
+
     } catch (err) {
-        await database.promise().rollback();
+        await connection.rollback();
+        connection.release();
 
         console.error("Create quiz error:", err);
 
         return res.status(500).json({
             status: "error",
-            message: "Unable to create quiz."
+            message: err.message
         });
     }
 });
@@ -131,6 +138,7 @@ QuizRouter.get("/GetTopics", (req, res) => {
 */
 QuizRouter.post("/GetQuestions", (req, res) => {
     const { id } = req.body;
+    console.log("Getting questions...")
 
     if (!id) {
         return res.status(400).json({

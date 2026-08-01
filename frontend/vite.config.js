@@ -67,6 +67,10 @@ export default defineConfig({
                 target: proxyTarget,
                 changeOrigin: true
             },
+            "/GetQuestions": {
+            target: proxyTarget,
+            changeOrigin: true
+         },
         }
     }
 });
