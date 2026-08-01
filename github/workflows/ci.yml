@@ -35,7 +35,7 @@ jobs:
           EMAIL_APP_PASSWORD: test-password
         run: npm test
 
-          frontend-checks:
+  frontend-checks:
     name: Run Frontend Lint and Build
     runs-on: ubuntu-latest
 
