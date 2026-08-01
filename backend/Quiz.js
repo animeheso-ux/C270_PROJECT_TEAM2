@@ -94,7 +94,7 @@ QuizRouter.post("/CreateQuiz", VerifyToken, async (req, res) => {
 
         return res.status(500).json({
             status: "error",
-            message: err.message
+            message: "Unable to create quiz."
         });
     }
 });
