@@ -35,18 +35,21 @@ describe("Create Quiz API", () => {
 
     let promiseMock;
 
-    beforeEach(() => {
-        jest.clearAllMocks();
+   beforeEach(() => {
+    jest.clearAllMocks();
 
-        promiseMock = {
-            beginTransaction: jest.fn(),
-            query: jest.fn(),
-            commit: jest.fn(),
-            rollback: jest.fn()
-        };
+    promiseMock = {
+        beginTransaction: jest.fn().mockResolvedValue(),
+        query: jest.fn(),
+        commit: jest.fn().mockResolvedValue(),
+        rollback: jest.fn().mockResolvedValue(),
+        release: jest.fn()
+    };
 
-        database.promise = jest.fn(() => promiseMock);
-    });
+    database.promise = jest.fn(() => ({
+        getConnection: jest.fn().mockResolvedValue(promiseMock)
+    }));
+});
 
     afterEach(() => {
         jest.restoreAllMocks();
