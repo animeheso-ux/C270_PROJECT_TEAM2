@@ -8,24 +8,34 @@ const TokenRouter = express.Router()
 
 
 
-const VerifyToken = (req,res,next) => {
-    const header = req.headers["authorization"]
-    const Token = header && header.split(" ")[1]
+const VerifyToken = (req, res, next) => {
+    const header = req.headers.authorization;
+    const token = header && header.split(" ")[1];
 
-    if (!Token) {
-        return res.status(401).json({status : "Token not found"})
+    if (!token) {
+        return res.status(401).json({
+            status: "error",
+            message: "Authentication token is required.",
+        });
     }
 
-    jsonwebtoken.verify(Token,process.env.JWT_SECRET || "YOUR_SECRET_KEY",(err,decoded)=> {
-        if (err) {
-            return res.status(403).json({status : "Token expired or invalid"})
+    jsonwebtoken.verify(
+        token,
+        process.env.JWT_SECRET || "YOUR_SECRET_KEY",
+        (error, decoded) => {
+            if (error) {
+                return res.status(401).json({
+                    status: "error",
+                    message:
+                        "Invalid or expired authentication token.",
+                });
+            }
+
+            req.Token = decoded;
+            next();
         }
-        req.Token = decoded
-        next()
-    })
-
-
-}
+    );
+};
 
 
 TokenRouter.get("/GetToken",VerifyToken,(req,res)=> {

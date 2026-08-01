@@ -5,13 +5,16 @@ const jsonwebtoken = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 const { VerifyToken } = require("./token");
-const { Truck } = require("lucide-react");
 
 require("dotenv").config();
 
 let emailTransporter = null;
 
-if (process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD) {
+const hasEmailCredentials =
+    process.env.EMAIL_USER &&
+    process.env.EMAIL_APP_PASSWORD;
+
+if (process.env.NODE_ENV === "test" || hasEmailCredentials) {
     emailTransporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -20,39 +23,154 @@ if (process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD) {
         },
     });
 
-    emailTransporter.verify((error) => {
-        if (error) {
-            console.warn("Email server verification failed:", error.message);
-        } else {
-            console.log("Email server is ready!");
-        }
-    });
+    if (process.env.NODE_ENV !== "test") {
+        emailTransporter.verify((error) => {
+            if (error) {
+                console.warn(
+                    "Email server verification failed:",
+                    error.message
+                );
+            } else {
+                console.log("Email server is ready!");
+            }
+        });
+    }
 } else {
-    console.warn("Email credentials are not configured. Forgot password email sending is disabled.");
+    console.warn(
+        "Email credentials are not configured. Forgot password email sending is disabled."
+    );
 }
-
-
 
 const SALT_ROUNDS = 10;
 const DatabaseRouter = express.Router();
 
 const passwordResetCodes = new Map();
 
-const database = mysql.createPool({
-    host: process.env.DB_HOST || "localhost",
-    user: process.env.DB_USER || "root",
-    password: process.env.DB_PASSWORD || "RP738964$",
-    database: process.env.DB_NAME || "learning_quest",
-    port: process.env.DB_PORT || 3307,
-    ssl: {
-        rejectUnauthorized: false
-    },
+
+let database;
+
+if (process.env.NODE_ENV === "test") {
+    database = {
+        query() {
+            throw new Error(
+                "database.query() was called without being mocked in a test."
+            );
+        },
+
+        promise() {
+            return {
+                query: async () => {
+                    throw new Error(
+                        "database.promise().query() was called without being mocked in a test."
+                    );
+                },
+
+                beginTransaction: async () => {},
+                commit: async () => {},
+                rollback: async () => {}
+            };
+        }
+    };
+} else {
+    database = mysql.createPool({
+        host: process.env.DB_HOST || "localhost",
+        user: process.env.DB_USER || "root",
+        password: process.env.DB_PASSWORD || "RP738964$",
+        database: process.env.DB_NAME || "learning_quest",
+        port : 3307,
+        ssl : {
+            rejectUnauthorized : false
+        },
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
-});
+    }
+
+);
 
 
+
+
+        database.query(
+            "ALTER TABLE users ADD COLUMN phone VARCHAR(30) NULL",
+            (phoneErr) => {
+                if (
+                    phoneErr &&
+                    phoneErr.code !== "ER_DUP_FIELDNAME"
+                ) {
+                    console.error(
+                        "ADD PHONE COLUMN ERROR:",
+                        phoneErr
+                    );
+                }
+            }
+        );
+
+        database.query(
+            "ALTER TABLE users ADD COLUMN address TEXT NULL",
+            (addressErr) => {
+                if (
+                    addressErr &&
+                    addressErr.code !== "ER_DUP_FIELDNAME"
+                ) {
+                    console.error(
+                        "ADD ADDRESS COLUMN ERROR:",
+                        addressErr
+                    );
+                }
+            }
+        );
+}
+
+function createAuditLog({
+    userId = null,
+    username = null,
+    email = null,
+    role = null,
+    action,
+    description,
+    status,
+    ipAddress = null,
+}) {
+    const auditSql = `
+        INSERT INTO audit_logs
+        (
+            user_id,
+            username,
+            email,
+            role,
+            action,
+            description,
+            status,
+            ip_address
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const auditValues = [
+        userId,
+        username,
+        email,
+        role,
+        action,
+        description,
+        status,
+        ipAddress,
+    ];
+
+    database.query(
+        auditSql,
+        auditValues,
+        (auditError) => {
+            if (auditError) {
+                console.error(
+                    "AUDIT LOG INSERT ERROR:",
+                    auditError
+                );
+            }
+        }
+    );
+}
 
 
 DatabaseRouter.get("/GetUsers", (req, res) => {
@@ -71,8 +189,62 @@ DatabaseRouter.get("/GetUsers", (req, res) => {
     );
 });
 
-DatabaseRouter.get("/AuditLogs", (req, res) => {
-    return res.json({ status: "success", result: [] });
+DatabaseRouter.get("/AuditLogs", VerifyToken, (req, res) => {
+    const user = req.Token;
+
+    if (user.role !== "admin") {
+        createAuditLog({
+            userId: user.id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            action: "UNAUTHORIZED_ACCESS",
+            description:
+                `${user.username} attempted to access the audit logs.`,
+            status: "DENIED",
+            ipAddress: req.ip,
+        });
+
+        return res.status(403).json({
+            status: "error",
+            message: "Administrator access is required.",
+        });
+    }
+
+    const sql = `
+        SELECT
+            id,
+            user_id,
+            username,
+            email,
+            role,
+            action,
+            description,
+            status,
+            ip_address,
+            created_at
+        FROM audit_logs
+        ORDER BY created_at DESC
+    `;
+
+    database.query(sql, (error, results) => {
+        if (error) {
+            console.error(
+                "GET AUDIT LOGS ERROR:",
+                error
+            );
+
+            return res.status(500).json({
+                status: "error",
+                message: "Unable to retrieve audit logs.",
+            });
+        }
+
+        return res.json({
+            status: "success",
+            result: results,
+        });
+    });
 });
 
 DatabaseRouter.get("/Profile", VerifyToken, (req, res) => {
@@ -666,4 +838,5 @@ DatabaseRouter.delete("/DeleteQuiz/:id",(req, res) => {
 module.exports = {
     DatabaseRouter,
     database,
+    passwordResetCodes,
 };

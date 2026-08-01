@@ -57,12 +57,6 @@ const Navbar = ({isLoggedIn,ToLogin,ToSignup,ToLogout,OnBrandClick,OnProfileClic
                   <span>→</span>
                 </button>
 
-                <button
-                  type="button" className="LQ-DropdownItem" onClick={() => setShowDropdown(false)}>
-                  <span>Settings</span>
-                  <span>→</span>
-                </button>
-
                 <div className="LQ-DropdownDivider" />
 
                 <button
