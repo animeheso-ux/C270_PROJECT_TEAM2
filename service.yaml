@@ -25,7 +25,7 @@ spec:
       serviceAccountName: 203838961883-compute@developer.gserviceaccount.com
       containers:
       - name: backend
-        image: us-central1-docker.pkg.dev/c270-backend/cloud-run-source-deploy/c270-project-team2-main2_backend@sha256:da41118cb842d852ff30adea7e691dc86d430e86c9ca8b922d43dae2bef78d43
+        image: us-central1-docker.pkg.dev/c270-backend/cloud-run-source-deploy/c270-project-team2-main2_backend@sha256:be69dd57a84bf32b786a37f68339637b7a29df9c6f53444879e9a5ed792a2118
         env:
         - name: DB_HOST
           value: pqoqdx.h.filess.io
@@ -39,6 +39,10 @@ spec:
           value: Learning_Quest_raystincan
         - name: JWT_SECRET
           value: YOURSECRET
+        - name : EMAIL_USER
+          value: learningquest.c270@gmail.com
+        - name : EMAIL_APP_PASSWORD
+          value: cocm goeh dfdm itpy
         resources:
           limits:
             cpu: 1000m

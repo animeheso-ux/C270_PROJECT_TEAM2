@@ -9,6 +9,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
       JWT_SECRET: ${JWT_SECRET}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_APP_PASSWORD : ${EMAIL_APP_PASSWORD}
     ports:
       - "3000:3000"
 
