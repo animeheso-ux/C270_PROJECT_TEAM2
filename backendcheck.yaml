@@ -1,0 +1,17 @@
+# deploy-backend.yml
+name: Deploy Backend
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+      - run: gcloud builds submit --tag us-central1-docker.pkg.dev/c270-backend/my-repo/backend ./backend
+      - run: gcloud run deploy backend --image us-central1-docker.pkg.dev/c270-backend/my-repo/backend --region us-central1
