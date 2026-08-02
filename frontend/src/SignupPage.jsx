@@ -5,6 +5,8 @@ import validator from "validator";
 
 import {BookOpen,Brain,Trophy,BarChart3,} from "lucide-react";
 
+//xinrui
+
 function SignUpPage({ToLogin, ToRegisterSuccess,}) {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");

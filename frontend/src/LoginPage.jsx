@@ -3,6 +3,8 @@ import "./LoginSign.css";
 
 import {BookOpen,Brain,Trophy,BarChart3,} from "lucide-react";
 
+//Xinrui
+
 function LoginPage({ToQuizPage,ToSignup,ToTeacher,ToAdmin,ToForgotPassword,}) {
     const [loginIdentifier, setLoginIdentifier] = useState("");
     const [password, setPassword] =useState("");

@@ -8,6 +8,9 @@ const { VerifyToken } = require("./token");
 
 require("dotenv").config();
 
+
+//Xinrui
+
 let emailTransporter = null;
 
 const hasEmailCredentials =
@@ -792,6 +795,9 @@ DatabaseRouter.post("/ResetPassword", async (req, res) => {
         });
     }
 });
+
+
+// Yong Jian
 
 DatabaseRouter.delete("/DeleteQuiz/:id",(req, res) => {
         const quizId = req.params.id;
