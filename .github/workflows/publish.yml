@@ -56,7 +56,7 @@ jobs:
           git commit -m "chore: bump versions to backend v${BACKEND_VERSION}, frontend v${FRONTEND_VERSION}"
 
           # Push commits first (tag creation needs them)
-          git push origin main2
+          git push origin main
 
           # Create and push tags
           git tag "$BACKEND_TAG"
