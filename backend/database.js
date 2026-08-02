@@ -72,24 +72,20 @@ if (process.env.NODE_ENV === "test") {
         }
     };
 } else {
-    database = mysql.createPool({
+    database = mysql.createConnection({
         host: process.env.DB_HOST || "localhost",
         user: process.env.DB_USER || "root",
         password: process.env.DB_PASSWORD || "RP738964$",
-        database: process.env.DB_NAME || "learning_quest",
-        port : 3307,
-        ssl : {
-            rejectUnauthorized : false
-        },
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-    }
+        database: process.env.DB_NAME || "learning_quest"
+    });
 
-);
+    database.connect((err) => {
+        if (err) {
+            console.error("MYSQL CONNECTION ERROR:", err);
+            return;
+        }
 
-
-
+        console.log("MYSQL CONNECTED!");
 
         database.query(
             "ALTER TABLE users ADD COLUMN phone VARCHAR(30) NULL",
@@ -120,6 +116,7 @@ if (process.env.NODE_ENV === "test") {
                 }
             }
         );
+    });
 }
 
 function createAuditLog({
