@@ -73,7 +73,7 @@ function ForgotPassword({ToLogin,ToPasswordChanged,}) {
             setIsSubmitting(true);
 
             const response = await fetch(
-                `${API_BASE_URL}/ForgotPassword`,
+                `/ForgotPassword`,
                 {
                     method: "POST",
                     headers: {"Content-Type":"application/json",},
@@ -175,7 +175,7 @@ function ForgotPassword({ToLogin,ToPasswordChanged,}) {
             setIsSubmitting(true);
 
             const response = await fetch(
-                `${API_BASE_URL}/ResetPassword`,
+                `/ResetPassword`,
                 {
                     method: "POST",
                     headers: {"Content-Type":"application/json",},

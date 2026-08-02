@@ -11,6 +11,15 @@ export default defineConfig({
             "c270-project-team2-main2-203838961883.us-central1.run.app"
         ],
         proxy: {
+            "/ResetPassword": {
+                target: proxyTarget,
+                changeOrigin: true
+            },
+
+            "/ForgotPassword": {
+                target: proxyTarget,
+                changeOrigin: true
+            },
             "/Login": {
                 target: proxyTarget,
                 changeOrigin: true
