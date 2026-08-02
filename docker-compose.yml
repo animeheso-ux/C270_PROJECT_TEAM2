@@ -1,4 +1,21 @@
 services:
+  # MySQL service - commented out to use external Cloud SQL
+  # mysql:
+  #   image: mysql:8.4
+  #   environment:
+  #     MYSQL_DATABASE: learning_quest
+  #     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+  #   ports:
+  #     - "3307:3306"
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p'$${MYSQL_ROOT_PASSWORD}' >/dev/null 2>&1"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 30
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #     - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+  #
   backend:
     build: ./backend
     restart: on-failure
