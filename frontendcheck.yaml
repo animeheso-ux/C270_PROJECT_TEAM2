@@ -1,0 +1,17 @@
+# deploy-frontend.yml
+name: Deploy Frontend
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+      - run: gcloud builds submit --tag us-central1-docker.pkg.dev/c270-backend/my-repo/frontend ./frontend
+      - run: gcloud run deploy frontend --image us-central1-docker.pkg.dev/c270-backend/my-repo/frontend --region us-central1 --port 5173 --set-env-vars VITE_PROXY_TARGET=https://backend-203838961883.us-central1.run.app

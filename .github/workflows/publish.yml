@@ -1,0 +1,97 @@
+name: Publish Docker Images & Bump Semver
+
+on:
+  workflow_dispatch:   # manual trigger with version level input
+    inputs:
+      bump-level:
+        description: 'Semver bump level'
+        required: true
+        type: choice
+        default: patch
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  publish:
+    name: Bump Version, Tag & Publish Images
+    runs-on: ubuntu-latest
+    steps:
+      # ── Checkout ───────────────────────────────────────────────
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0               # needed for tags & history
+
+      # ── Configure git identity ─────────────────────────────────
+      - name: Configure Git
+        run: |
+          git config user.name "github_auto_job"
+          git config user.email "github_auto_job@users.noreply.github.com"
+
+      # ── Bump versions & create tag ─────────────────────────────
+      - name: Bump version and push tag
+        id: bump
+        run: |
+          LEVEL="${{ github.event.inputs.bump-level }}"
+
+          echo "Bumping backend to $LEVEL..."
+          cd backend && npm version "$LEVEL" --no-git-tag-version --sign-git-tag=false
+          BACKEND_VERSION=$(node -p "require('./package.json').version")
+          BACKEND_TAG="backend-v${BACKEND_VERSION}"
+          cd ..
+
+          echo "Bumping frontend to $LEVEL..."
+          cd frontend && npm version "$LEVEL" --no-git-tag-version --sign-git-tag=false
+          FRONTEND_VERSION=$(node -p "require('./package.json').version")
+          FRONTEND_TAG="frontend-v${FRONTEND_VERSION}"
+          cd ..
+
+          # Commit the version bumps
+          git add backend/package.json frontend/package.json
+          git commit -m "chore: bump versions to backend v${BACKEND_VERSION}, frontend v${FRONTEND_VERSION}"
+
+          # Push commits first (tag creation needs them)
+          git push origin main
+
+          # Create and push tags
+          git tag "$BACKEND_TAG"
+          git tag "$FRONTEND_TAG"
+          git push origin "$BACKEND_TAG" "$FRONTEND_TAG"
+
+          echo "backend_tag=${BACKEND_TAG}" >> $GITHUB_OUTPUT
+          echo "frontend_tag=${FRONTEND_TAG}" >> $GITHUB_OUTPUT
+          echo "backend_version=${BACKEND_VERSION}" >> $GITHUB_OUTPUT
+          echo "frontend_version=${FRONTEND_VERSION}" >> $GITHUB_OUTPUT
+
+      # ── Login to GHCR ──────────────────────────────────────────
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── Build & Push Backend ───────────────────────────────────
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: |
+            ghcr.io/animeheso-ux/learningquest-backend:${{ steps.bump.outputs.backend_tag }}
+            ghcr.io/animeheso-ux/learningquest-backend:latest
+
+      # ── Build & Push Frontend ──────────────────────────────────
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: |
+            ghcr.io/animeheso-ux/learningquest-frontend:${{ steps.bump.outputs.frontend_tag }}
+            ghcr.io/animeheso-ux/learningquest-frontend:latest
